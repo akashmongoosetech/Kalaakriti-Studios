@@ -5,8 +5,7 @@ import { Footer } from '../footer/Footer';
 import { FloatingActions } from '../common/FloatingActions';
 import { BookingCTA } from '../common/BookingCTA';
 import { ScrollProgress } from '../common/ScrollProgress';
-import { useLenis } from '../../hooks/useLenis';
-import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { useSmoothScroll } from '../../context/SmoothScrollContext';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -14,22 +13,16 @@ interface MainLayoutProps {
 
 export function MainLayout({ children }: MainLayoutProps) {
   const { hash } = useLocation();
-  const prefersReduced = useReducedMotion();
+  const { scrollTo } = useSmoothScroll();
 
-  useLenis();
-
-  // Handle in-page anchor hash navigation cleanly
+  // Handle in-page anchor hash navigation cleanly via Lenis
   useEffect(() => {
     if (!hash) return;
-    const id = hash.slice(1);
     const timer = window.setTimeout(() => {
-      const target = document.getElementById(id);
-      if (target) {
-        target.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth' });
-      }
+      scrollTo(hash, { offset: -88, duration: 1.15 });
     }, 120);
     return () => window.clearTimeout(timer);
-  }, [hash, prefersReduced]);
+  }, [hash, scrollTo]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F7F2E9] text-[#171615]">

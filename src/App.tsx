@@ -12,6 +12,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MainLayout } from './components/layout/MainLayout';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { PageTransition } from './components/animations/PageTransition';
+import { SmoothScrollProvider, useSmoothScroll } from './context/SmoothScrollContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -41,20 +42,19 @@ function PageLoader() {
 
 function AnimatedRoutes() {
   const location = useLocation();
+  const { scrollTo, lenis } = useSmoothScroll();
 
   const handleExitComplete = useCallback(() => {
     if (!location.hash) {
-      window.scrollTo({ top: 0, behavior: 'auto' });
+      scrollTo(0, { immediate: true });
     } else {
-      const target = document.getElementById(location.hash.slice(1));
-      if (target) {
-        target.scrollIntoView({ behavior: 'auto' });
-      }
+      scrollTo(location.hash, { immediate: true, offset: -88 });
     }
     window.requestAnimationFrame(() => {
+      lenis?.resize();
       ScrollTrigger.refresh();
     });
-  }, [location.hash]);
+  }, [location.hash, scrollTo, lenis]);
 
   return (
     <AnimatePresence mode="wait" initial={false} onExitComplete={handleExitComplete}>
@@ -86,11 +86,13 @@ export default function App() {
   return (
     <MotionConfig reducedMotion="user">
       <HelmetProvider>
-        <BrowserRouter>
-          <MainLayout>
-            <AnimatedRoutes />
-          </MainLayout>
-        </BrowserRouter>
+        <SmoothScrollProvider>
+          <BrowserRouter>
+            <MainLayout>
+              <AnimatedRoutes />
+            </MainLayout>
+          </BrowserRouter>
+        </SmoothScrollProvider>
       </HelmetProvider>
     </MotionConfig>
   );

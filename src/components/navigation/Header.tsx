@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { StudioLogo } from '../common/StudioLogo';
 import { CATEGORY_NAV_ITEMS, SERVICE_NAV_ITEMS } from '../../data/navigation';
 import { STUDIO_CONFIG } from '../../data/studio';
+import { useSmoothScroll } from '../../context/SmoothScrollContext';
 
 /**
  * Sticky 3-Zone Editorial Top Bar:
@@ -13,6 +14,7 @@ import { STUDIO_CONFIG } from '../../data/studio';
  */
 export function Header() {
   const { pathname } = useLocation();
+  const { lockScroll, unlockScroll } = useSmoothScroll();
   const [scrolled, setScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<'categories' | 'services' | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -67,13 +69,14 @@ export function Header() {
     };
   }, []);
 
-  // Lock body scroll when mobile overlay is open
+  // Lock Lenis + body scroll when mobile overlay is open
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    if (!mobileOpen) return;
+    lockScroll();
     return () => {
-      document.body.style.overflow = '';
+      unlockScroll();
     };
-  }, [mobileOpen]);
+  }, [mobileOpen, lockScroll, unlockScroll]);
 
   const linkBase = isTransparent
     ? 'text-[#F7F2E9]/90 hover:text-[#C5A46D]'
@@ -279,6 +282,7 @@ export function Header() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
+            data-lenis-prevent
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}

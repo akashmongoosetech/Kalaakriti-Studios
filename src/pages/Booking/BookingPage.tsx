@@ -24,6 +24,7 @@ import {
 import { DemoBookingRecord } from '../../types';
 import { SeoHelmet } from '../../components/common/SeoHelmet';
 import { SafeImage } from '../../components/common/SafeImage';
+import { useSmoothScroll } from '../../context/SmoothScrollContext';
 
 const STORAGE_KEY = 'kalaakriti_demo_bookings';
 
@@ -74,6 +75,7 @@ function generateDemoReference(): string {
 }
 
 export default function BookingPage() {
+  const { scrollTo } = useSmoothScroll();
   const [searchParams] = useSearchParams();
   const presetSlug = searchParams.get('category');
   const presetCategory = PHOTOGRAPHY_CATEGORIES.find((c) => c.slug === presetSlug)?.name || 'Wedding Photography';
@@ -133,7 +135,7 @@ export default function BookingPage() {
     const valid = await trigger(fields);
     if (valid) {
       setStep((s) => Math.min(5, s + 1));
-      window.scrollTo({ top: 180, behavior: 'smooth' });
+      scrollTo(180, { duration: 0.85 });
     }
   };
 
@@ -166,7 +168,7 @@ export default function BookingPage() {
     }
 
     setConfirmedBooking(record);
-    window.scrollTo({ top: 120, behavior: 'smooth' });
+    scrollTo(120, { duration: 0.9 });
   };
 
   const inputClass =

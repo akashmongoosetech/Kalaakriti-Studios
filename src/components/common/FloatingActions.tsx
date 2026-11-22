@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { WhatsAppChatButton } from './WhatsAppChatButton';
+import { useSmoothScroll } from '../../context/SmoothScrollContext';
 
 export function FloatingActions() {
   const [showTop, setShowTop] = useState(false);
+  const { scrollTo } = useSmoothScroll();
 
   useEffect(() => {
     const onScroll = () => {
@@ -15,7 +17,7 @@ export function FloatingActions() {
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollTo(0, { duration: 1.35 });
   };
 
   return (

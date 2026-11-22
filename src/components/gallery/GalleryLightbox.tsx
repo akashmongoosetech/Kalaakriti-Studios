@@ -19,6 +19,7 @@ import {
 import { GalleryItem } from '../../types';
 import { SafeImage } from '../common/SafeImage';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { useSmoothScroll } from '../../context/SmoothScrollContext';
 
 interface GalleryLightboxProps {
   items: GalleryItem[];
@@ -43,6 +44,7 @@ export function GalleryLightbox({
   onNavigate,
 }: GalleryLightboxProps) {
   const prefersReduced = useReducedMotion();
+  const { lockScroll, unlockScroll } = useSmoothScroll();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const dragStartRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
@@ -110,11 +112,19 @@ export function GalleryLightbox({
     }
   }, [currentIndex !== null]);
 
-  // Keyboard navigation & body scroll lock
+  // Lock Lenis + body scroll cleanly while lightbox is open
+  const isOpen = currentIndex !== null;
+  useEffect(() => {
+    if (!isOpen) return;
+    lockScroll();
+    return () => {
+      unlockScroll();
+    };
+  }, [isOpen, lockScroll, unlockScroll]);
+
+  // Keyboard navigation
   useEffect(() => {
     if (currentIndex === null) return;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -140,7 +150,6 @@ export function GalleryLightbox({
 
     window.addEventListener('keydown', onKeyDown);
     return () => {
-      document.body.style.overflow = prevOverflow;
       window.removeEventListener('keydown', onKeyDown);
     };
   }, [currentIndex, item, onClose, handleNext, handlePrev, handleZoomIn, handleZoomOut, resetZoom]);
@@ -232,6 +241,7 @@ export function GalleryLightbox({
           role="dialog"
           aria-modal="true"
           aria-label={`Viewing ${item.title}`}
+          data-lenis-prevent
           initial={prefersReduced ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={prefersReduced ? { opacity: 0 } : { opacity: 0 }}
