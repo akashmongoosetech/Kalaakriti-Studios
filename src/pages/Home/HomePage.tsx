@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowDown, ArrowRight, ArrowUpRight, Instagram, MapPin } from 'lucide-react';
+import { ArrowDown, ArrowRight, ArrowUpRight, MapPin } from 'lucide-react';
 import { STUDIO_CONFIG } from '../../data/studio';
 import { STUDIO_IMAGES } from '../../data/media';
 import { PHOTOGRAPHY_CATEGORIES } from '../../data/categories';
@@ -23,6 +23,7 @@ import { GalleryLightbox } from '../../components/gallery/GalleryLightbox';
 import { ErrorBoundary } from '../../components/common/ErrorBoundary';
 import { TestimonialCarousel } from '../../components/common/TestimonialCarousel';
 import { NewsletterSubscribe } from '../../components/common/NewsletterSubscribe';
+import { InstagramGrid } from '../../components/common/InstagramGrid';
 import {
   AnimatedStatsStrip,
   FAQAccordionSection,
@@ -132,15 +133,6 @@ const BOOKING_PROCESS_STEPS = [
     title: 'Receive Your Memories',
     description: 'Relive your story through curated previews, full online galleries, 4K films, and heirloom albums.',
   },
-];
-
-const INSTAGRAM_PREVIEW_FRAMES = [
-  { src: STUDIO_IMAGES.heroWedding, caption: 'Mandap twilight portraits · Indore' },
-  { src: STUDIO_IMAGES.haldiRitual, caption: 'Morning marigold Haldi · Ujjain' },
-  { src: STUDIO_IMAGES.mehendiBridal, caption: 'Bridal henna & emerald silk · Bhopal' },
-  { src: STUDIO_IMAGES.preweddingPalace, caption: 'Narmada sandstone arches · Maheshwar' },
-  { src: STUDIO_IMAGES.engagementSangeet, caption: 'Chandelier ring exchange · Indore' },
-  { src: STUDIO_IMAGES.maternityFamily, caption: 'Chanderi silk maternity heirloom · Bhopal' },
 ];
 
 export default function HomePage() {
@@ -674,49 +666,8 @@ export default function HomePage() {
       {/* SECTION 10: TESTIMONIALS CAROUSEL */}
       <TestimonialCarousel />
 
-      {/* SECTION 11: INSTAGRAM STYLE GALLERY */}
-      <section className="py-20 md:py-28 bg-[#F7F2E9]">
-        <div className="studio-container">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10">
-            <SectionHeading
-              devanagari="झलकियाँ"
-              kicker={`Journal · ${STUDIO_CONFIG.social.instagramHandle}`}
-              title="Recent Frames From the Studio Feed"
-            />
-            <a
-              href={STUDIO_CONFIG.social.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg border border-[#171615]/20 px-5 py-2.5 text-sm font-medium text-[#171615] hover:bg-[#57252F] hover:text-[#F7F2E9] hover:border-[#57252F] transition-colors whitespace-nowrap shrink-0"
-            >
-              <Instagram className="w-4 h-4" aria-hidden="true" />
-              <span>Follow Us</span>
-            </a>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {INSTAGRAM_PREVIEW_FRAMES.map((frame, i) => (
-              <a
-                key={i}
-                href={STUDIO_CONFIG.social.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative aspect-square overflow-hidden rounded-lg bg-[#171615]"
-              >
-                <SafeImage
-                  src={frame.src}
-                  alt={frame.caption}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-108"
-                />
-                <div className="absolute inset-0 bg-[#171615]/70 opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-4 flex flex-col justify-between text-[#F7F2E9]">
-                  <Instagram className="w-4 h-4 text-[#C5A46D]" aria-hidden="true" />
-                  <span className="text-xs leading-snug">{frame.caption}</span>
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* SECTION 11: INSTAGRAM LUXURY MASONRY GALLERY */}
+      <InstagramGrid />
 
       {/* SECTION 12: CITIES WE SERVE */}
       <section className="py-20 md:py-28 bg-[#171615] text-[#F7F2E9]">

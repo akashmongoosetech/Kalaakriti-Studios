@@ -1,0 +1,104 @@
+{
+  "account": "@kalaakritistudios",
+  "data": [
+    {
+      "id": "ig-101",
+      "caption": "Twilight pheras beneath hand-strung mogra and marigold garlands. Every golden ember reflected the quiet devotion of two families uniting in Indore.",
+      "media_type": "CAROUSEL_ALBUM",
+      "media_url": "/src/assets/images/hero_indian_wedding_1795336908672.jpg",
+      "thumbnail_url": "/src/assets/images/hero_indian_wedding_1795336908672.jpg",
+      "permalink": "https://instagram.com/kalaakritistudios.example",
+      "timestamp": "2026-11-18T14:30:00Z",
+      "location": "Indore, Madhya Pradesh",
+      "aspectRatio": "portrait"
+    },
+    {
+      "id": "ig-102",
+      "caption": "Morning sunlight, brass urulis, and joyful bursts of turmeric and marigold petals during a courtyard Haldi ceremony in Ujjain.",
+      "media_type": "IMAGE",
+      "media_url": "/src/assets/images/cat_haldi_ritual_1795336908439.jpg",
+      "thumbnail_url": "/src/assets/images/cat_haldi_ritual_1795336908439.jpg",
+      "permalink": "https://instagram.com/kalaakritistudios.example",
+      "timestamp": "2026-11-14T09:15:00Z",
+      "location": "Ujjain, Madhya Pradesh",
+      "aspectRatio": "square"
+    },
+    {
+      "id": "ig-103",
+      "caption": "Golden hour silhouettes along the sandstone arches of Ahilya Fort overlooking the Narmada — a timeless Maheshwar pre-wedding reel.",
+      "media_type": "VIDEO",
+      "media_url": "/src/assets/images/cat_prewedding_palace_1795336909284.jpg",
+      "thumbnail_url": "/src/assets/images/cat_prewedding_palace_1795336909284.jpg",
+      "permalink": "https://instagram.com/kalaakritistudios.example",
+      "timestamp": "2026-11-10T17:45:00Z",
+      "location": "Maheshwar, Madhya Pradesh",
+      "aspectRatio": "landscape"
+    },
+    {
+      "id": "ig-104",
+      "caption": "Intricate bridal henna, heirloom polki bangles, and emerald silk captured in soft window light before the evening Sangeet.",
+      "media_type": "CAROUSEL_ALBUM",
+      "media_url": "/src/assets/images/cat_mehendi_bridal_1795336908797.jpg",
+      "thumbnail_url": "/src/assets/images/cat_mehendi_bridal_1795336908797.jpg",
+      "permalink": "https://instagram.com/kalaakritistudios.example",
+      "timestamp": "2026-11-06T12:20:00Z",
+      "location": "Bhopal, Madhya Pradesh",
+      "aspectRatio": "portrait"
+    },
+    {
+      "id": "ig-105",
+      "caption": "Warm chandelier glow and joyful applause as rings were exchanged on an autumn evening in Indore.",
+      "media_type": "VIDEO",
+      "media_url": "/src/assets/images/cat_engagement_sangeet_1795336908194.jpg",
+      "thumbnail_url": "/src/assets/images/cat_engagement_sangeet_1795336908194.jpg",
+      "permalink": "https://instagram.com/kalaakritistudios.example",
+      "timestamp": "2026-10-29T18:10:00Z",
+      "location": "Indore, Madhya Pradesh",
+      "aspectRatio": "landscape"
+    },
+    {
+      "id": "ig-106",
+      "caption": "Fine-art portrait study in handwoven Maheshwari zari silk — sculpted with directional natural light and understated editorial grading.",
+      "media_type": "IMAGE",
+      "media_url": "/src/assets/images/cat_portrait_studio_1795336909239.jpg",
+      "thumbnail_url": "/src/assets/images/cat_portrait_studio_1795336909239.jpg",
+      "permalink": "https://instagram.com/kalaakritistudios.example",
+      "timestamp": "2026-10-24T11:00:00Z",
+      "location": "Indore Studio",
+      "aspectRatio": "portrait"
+    },
+    {
+      "id": "ig-107",
+      "caption": "Sacred vows beside the ceremonial havan fire — documentary restraint preserving every flicker of candlelight and emotion.",
+      "media_type": "CAROUSEL_ALBUM",
+      "media_url": "/src/assets/images/cat_wedding_pheras_1795336909002.jpg",
+      "thumbnail_url": "/src/assets/images/cat_wedding_pheras_1795336909002.jpg",
+      "permalink": "https://instagram.com/kalaakritistudios.example",
+      "timestamp": "2026-10-18T16:40:00Z",
+      "location": "Bhopal, Madhya Pradesh",
+      "aspectRatio": "landscape"
+    },
+    {
+      "id": "ig-108",
+      "caption": "Quiet anticipation draped in pastel Chanderi silk — an intimate maternity heirloom session overlooking Upper Lake.",
+      "media_type": "IMAGE",
+      "media_url": "/src/assets/images/cat_maternity_family_1795336909327.jpg",
+      "thumbnail_url": "/src/assets/images/cat_maternity_family_1795336909327.jpg",
+      "permalink": "https://instagram.com/kalaakritistudios.example",
+      "timestamp": "2026-10-11T10:30:00Z",
+      "location": "Bhopal, Madhya Pradesh",
+      "aspectRatio": "square"
+    },
+    {
+      "id": "ig-109",
+      "caption": "Candlelit laughter, floral backdrops, and three generations celebrating a milestone evening together.",
+      "media_type": "IMAGE",
+      "media_url": "/src/assets/images/cat_birthday_celebration_1795336909037.jpg",
+      "thumbnail_url": "/src/assets/images/cat_birthday_celebration_1795336909037.jpg",
+      "permalink": "https://instagram.com/kalaakritistudios.example",
+      "timestamp": "2026-10-04T15:05:00Z",
+      "location": "Indore, Madhya Pradesh",
+      "aspectRatio": "landscape"
+    }
+  ]
+}
