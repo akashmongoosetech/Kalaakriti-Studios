@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+@theme {
+  --color-burgundy: #57252F;
+  --color-burgundy-deep: #3E1820;
+  --color-burgundy-soft: #6F323E;
+  --color-ivory: #F7F2E9;
+  --color-beige: #E8DCCB;
+  --color-gold: #C5A46D;
+  --color-gold-muted: #A98852;
+  --color-charcoal: #171615;
+  --color-charcoal-soft: #242220;
+  --color-ink-muted: #5C554E;
+
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Manrope", system-ui, -apple-system, sans-serif;
+  --font-devanagari: "Noto Serif Devanagari", serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: auto;
+    font-family: var(--font-sans);
+    background-color: #F7F2E9;
+    color: #171615;
+    overflow-x: clip;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #F7F2E9;
+    color: #171615;
+    overflow-x: clip;
+  }
+
+  h1, h2, h3, h4, .font-editorial {
+    font-family: var(--font-serif);
+    text-wrap: balance;
+  }
+
+  /* Accessible focus ring across light and dark sections */
+  :focus-visible {
+    outline: 2px solid #C5A46D;
+    outline-offset: 3px;
+  }
+}
+
+/* Fluid container system tuned from 320px mobile to 4K / large-screen TVs */
+.studio-container {
+  width: 100%;
+  max-width: min(1440px, 92vw);
+  margin-inline: auto;
+}
+
+@media (min-width: 1920px) {
+  .studio-container {
+    max-width: min(1760px, 88vw);
+  }
+}
+
+@media (min-width: 2560px) {
+  .studio-container {
+    max-width: min(2160px, 84vw);
+  }
+  html {
+    font-size: 18px;
+  }
+}
+
+/* Editorial typography fluid scales */
+.hero-headline {
+  font-size: clamp(2.5rem, 5.2vw, 5.5rem);
+  line-height: 1.03;
+  letter-spacing: -0.02em;
+}
+
+.section-headline {
+  font-size: clamp(2rem, 3.4vw, 3.65rem);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+
+.sub-headline {
+  font-size: clamp(1.35rem, 2vw, 2.15rem);
+  line-height: 1.22;
+}
+
+.prose-measure {
+  max-width: 65ch;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 3D flip utility classes */
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Smooth marquee divider ribbon */
+@keyframes editorial-marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-editorial-marquee {
+  animation: editorial-marquee 38s linear infinite;
+}
+
+/* Reduced motion compliance */
+@media (prefers-reduced-motion: reduce) {
+  .animate-editorial-marquee {
+    animation: none;
+  }
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Custom subtle scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F7F2E9;
+}
+::-webkit-scrollbar-thumb {
+  background: #C5A46D;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #57252F;
+}

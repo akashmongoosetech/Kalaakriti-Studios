@@ -1,0 +1,6 @@
+{
+  "name": "Kalaakriti Studios",
+  "description": "Luxury Indian wedding photography and cinematography studio in Madhya Pradesh — capturing timeless weddings, pre-weddings, rituals, and portraits.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

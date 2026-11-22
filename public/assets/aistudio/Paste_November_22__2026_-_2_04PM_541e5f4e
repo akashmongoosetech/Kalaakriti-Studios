@@ -1,0 +1,1061 @@
+# PROJECT: PREMIUM INDIAN PHOTOGRAPHY STUDIO WEBSITE
+
+Act as a world-class Senior Frontend Developer, UI/UX Designer, Creative Director, Motion Designer, and 3D Web Experience Developer.
+
+Your task is to design and develop a complete, premium, visually stunning, highly interactive, and fully responsive Indian Photography Studio website.
+
+This must be a complete multi-page website, not just a landing page.
+
+The website should represent an established Indian photography and cinematography studio specializing in weddings, pre-weddings, engagements, traditional ceremonies, birthdays, corporate events, maternity photography, portraits, and other special occasions.
+
+The final result must look like a professionally designed premium photography brand website with a strong visual identity, immersive photography experiences, cinematic transitions, sophisticated animations, and excellent user experience.
+
+==================================================
+1. TECHNOLOGY STACK
+==================================================
+
+Use the following frontend technologies:
+
+- React.js with TypeScript.
+- Vite as the build tool.
+- Tailwind CSS for styling.
+- React Router DOM for routing.
+- Framer Motion / Motion for React for page transitions and animations.
+- GSAP for advanced scroll-based animations and cinematic effects.
+- GSAP ScrollTrigger for scroll interactions.
+- Three.js / React Three Fiber for selected lightweight 3D visual effects.
+- Lenis for smooth scrolling.
+- Lucide React for icons.
+- Swiper.js for sliders, carousels, and testimonials.
+- React Hook Form for forms.
+- Zod for form validation.
+- React Helmet Async for SEO metadata.
+- React Player or native HTML5 video for video playback.
+- Yet Another React Lightbox or an equivalent library for image/video galleries.
+
+Use modern, maintainable, reusable, and scalable React architecture.
+
+IMPORTANT:
+This project is FRONTEND ONLY.
+
+Do not create a backend, Express server, MongoDB database, API server, authentication server, or backend folder.
+
+All website interactions should work on the frontend using local data, React state, mock booking flows, and localStorage where appropriate.
+
+Keep the architecture ready for future backend/API integration.
+
+==================================================
+2. BRAND IDENTITY AND WEBSITE PERSONALIZATION
+==================================================
+
+Create a professional Indian photography studio identity.
+
+Studio Name:
+[YOUR STUDIO NAME]
+
+Tagline:
+"Capturing Emotions. Creating Timeless Memories."
+
+Location:
+[YOUR CITY], Madhya Pradesh, India.
+
+Contact:
+[YOUR PHONE NUMBER]
+
+Email:
+[YOUR EMAIL ADDRESS]
+
+Address:
+[YOUR STUDIO ADDRESS]
+
+Instagram:
+[YOUR INSTAGRAM URL]
+
+Facebook:
+[YOUR FACEBOOK URL]
+
+YouTube:
+[YOUR YOUTUBE URL]
+
+Website Logo:
+Use my uploaded studio logo image throughout the website.
+
+Logo implementation requirements:
+
+- Use the actual uploaded logo image.
+- Do not recreate, distort, recolor, or replace the logo.
+- Preserve the original aspect ratio.
+- Create suitable light and dark logo placements depending on the background.
+- Use the logo in the navbar, footer, mobile navigation, and website branding.
+- If the logo has a transparent background, preserve transparency.
+- Create a professional favicon using the provided logo if possible.
+
+If studio details are not provided, use centralized editable placeholder data. Do not invent real contact details or claim that the studio has actual clients, awards, or achievements.
+
+==================================================
+3. VISUAL DESIGN DIRECTION
+==================================================
+
+Create a premium Indian photography brand aesthetic.
+
+The design should combine:
+
+- Luxury editorial design.
+- Indian cultural aesthetics.
+- Cinematic photography.
+- Modern minimalism.
+- Artistic typography.
+- Immersive visual storytelling.
+- Rich image compositions.
+- Smooth page transitions.
+- Elegant 3D interactions.
+
+COLOR PALETTE:
+
+Use a sophisticated warm luxury palette:
+
+Primary:
+Deep Burgundy – #57252F
+
+Secondary:
+Warm Ivory – #F7F2E9
+
+Accent:
+Muted Antique Gold – #C5A46D
+
+Dark:
+Charcoal – #171615
+
+Supporting:
+Warm Beige – #E8DCCB
+
+Use warm ivory as the primary light background, charcoal for dark sections, burgundy for important highlights, and muted gold for elegant accents.
+
+Avoid excessive gradients, neon colors, oversaturated UI elements, and generic purple/blue SaaS aesthetics.
+
+TYPOGRAPHY:
+
+Use a combination of:
+
+- Playfair Display or Cormorant Garamond for elegant headings.
+- Manrope or Inter for body content.
+- Optional Indian-language typography using a suitable Devanagari font.
+
+Use large editorial headings, carefully controlled font sizes, beautiful line spacing, and sophisticated text compositions.
+
+The overall appearance must feel like an Indian photography studio, not a foreign photography template.
+
+==================================================
+4. WEBSITE STRUCTURE AND ROUTES
+==================================================
+
+Build the following separate pages:
+
+1. Homepage – /
+2. About Us – /about
+3. Services – /services
+4. Categories – /categories
+5. Individual Category Pages:
+   - /categories/wedding
+   - /categories/pre-wedding
+   - /categories/engagement
+   - /categories/haldi
+   - /categories/mehendi
+   - /categories/birthday
+   - /categories/anniversary
+   - /categories/corporate
+   - /categories/maternity
+   - /categories/baby-photography
+   - /categories/family
+   - /categories/portrait
+   - /categories/events
+6. Portfolio / Gallery – /gallery
+7. Individual Gallery Details – /gallery/:slug
+8. Contact – /contact
+9. Booking – /booking
+10. Privacy Policy – /privacy-policy
+11. Terms & Conditions – /terms-and-conditions
+12. Custom 404 page – *
+
+Every page must have its own layout, content, imagery, and visual storytelling.
+
+Do not create one long page and pretend it is a multi-page website.
+
+==================================================
+5. HEADER AND NAVIGATION
+==================================================
+
+Design a premium, responsive navigation system.
+
+Desktop:
+
+- Logo on the left.
+- Navigation links in the center.
+- Book a Session button on the right.
+- Transparent header over the hero section.
+- Header transitions to a solid ivory or dark background while scrolling.
+- Smooth hover animations.
+- Elegant active navigation indicator.
+- Dropdown navigation for Photography Categories.
+- Dropdown navigation for Services.
+
+Mobile:
+
+- Elegant hamburger menu.
+- Full-screen navigation overlay.
+- Animated menu opening and closing.
+- Category links in expandable accordion sections.
+- Prominent booking button.
+- Social media links.
+- Close icon with smooth transitions.
+
+The header should be sticky and optimized for touch devices.
+
+==================================================
+6. HOMEPAGE – COMPLETE DESIGN
+==================================================
+
+Create a visually powerful homepage with the following sections:
+
+SECTION 1: CINEMATIC HERO
+
+- Full-screen cinematic hero section.
+- Use a stunning Indian wedding photograph or cinematic wedding video.
+- Large editorial headline:
+  "Every Moment Has a Story. We Make It Timeless."
+- Supporting text introducing the studio.
+- Primary CTA: Explore Our Work.
+- Secondary CTA: Book Your Date.
+- Small scroll indicator.
+- Animated text reveal.
+- Subtle parallax background.
+- Floating decorative elements.
+- Optional cinematic video background with fallback image.
+
+SECTION 2: INTRODUCTION
+
+Heading:
+"More Than Photographs. Memories That Last Forever."
+
+Write meaningful content introducing the studio, its photography philosophy, creativity, professionalism, and storytelling approach.
+
+Include a large image composition with asymmetric image layouts.
+
+SECTION 3: FEATURED CATEGORIES
+
+Create an attractive grid of photography categories.
+
+Include:
+- Wedding Photography.
+- Pre-Wedding Photography.
+- Engagement Photography.
+- Haldi & Mehendi.
+- Birthday Photography.
+- Anniversary Photography.
+- Corporate Photography.
+- Maternity Photography.
+- Baby Photography.
+- Family Photography.
+- Traditional Events.
+- Portrait Photography.
+
+Each category should have:
+- High-quality image.
+- Category name.
+- Short description.
+- Number of sample photographs (use demo content).
+- Animated hover effect.
+- Explore Category link.
+
+Each category must navigate to its own dedicated category page.
+
+SECTION 4: FEATURED PORTFOLIO
+
+Create a premium editorial gallery.
+
+- Mixed image and video cards.
+- Masonry layout.
+- Different image aspect ratios.
+- Hover image zoom.
+- Elegant overlay titles.
+- Play icon on videos.
+- View Project links.
+- View All Gallery button.
+
+SECTION 5: OUR STORY
+
+Introduce the photography team and creative vision.
+
+Use split-screen layouts, portrait images, and editorial typography.
+
+SECTION 6: SIGNATURE SERVICES
+
+Showcase premium services with image backgrounds:
+
+- Wedding Films.
+- Cinematic Wedding Photography.
+- Pre-Wedding Films.
+- Event Coverage.
+- Drone Photography.
+- Traditional Photography.
+- Couple Portraits.
+
+SECTION 7: WHY CHOOSE US
+
+Highlight:
+- Creative storytelling.
+- Experienced photography team.
+- Professional equipment.
+- Cinematic editing.
+- Attention to detail.
+- Timely delivery.
+- Personalized packages.
+- Professional event coordination.
+
+SECTION 8: STATISTICS
+
+Create elegant animated counters.
+
+Examples:
+- 500+ Celebrations Captured.
+- 300+ Happy Families.
+- 100+ Wedding Stories.
+- 5+ Years of Creative Experience.
+
+Clearly treat these as editable demonstration values, not verified business claims.
+
+SECTION 9: PROCESS
+
+Show the complete photography booking process:
+
+1. Share Your Requirements.
+2. Discuss Your Event.
+3. Select Your Package.
+4. Confirm Your Booking.
+5. Enjoy Your Celebration.
+6. Receive Your Memories.
+
+SECTION 10: TESTIMONIALS
+
+Create a premium testimonial carousel.
+
+Use realistic placeholder testimonials clearly marked as sample content until replaced with genuine client feedback.
+
+SECTION 11: INSTAGRAM STYLE GALLERY
+
+Display a grid of photography images.
+
+Include Instagram-style image hover effects and a Follow Us link.
+
+SECTION 12: CITIES WE SERVE
+
+Create an attractive location section.
+
+Include:
+- Indore.
+- Bhopal.
+- Ujjain.
+- Dewas.
+- Ratlam.
+- Gwalior.
+- Jabalpur.
+- Other cities across Madhya Pradesh.
+
+Add location descriptions and internal links where appropriate.
+
+Do not imply that a studio has physical branches in these cities unless verified.
+
+SECTION 13: FAQ
+
+Include common questions regarding:
+- Booking advance.
+- Photography packages.
+- Event coverage.
+- Delivery timelines.
+- Video editing.
+- Travel charges.
+- Photo albums.
+- Rescheduling.
+- Cancellation.
+
+SECTION 14: FINAL CTA
+
+Large cinematic image section.
+
+Heading:
+"Your Story Deserves to Be Remembered."
+
+Button:
+Let's Plan Your Celebration.
+
+==================================================
+7. ABOUT PAGE – /about
+==================================================
+
+Create a complete brand storytelling page.
+
+Sections:
+
+1. About Hero with cinematic Indian photography.
+2. Studio Introduction.
+3. Our Journey.
+4. Our Photography Philosophy.
+5. Our Mission and Vision.
+6. Our Creative Approach.
+7. Our Team.
+8. Behind the Scenes.
+9. Our Equipment and Technology.
+10. Our Working Process.
+11. Why Clients Choose Us.
+12. Final Booking CTA.
+
+Use a mixture of large photographs, editorial text, timeline animations, image overlaps, and subtle 3D effects.
+
+Write substantial, professional content.
+
+==================================================
+8. SERVICES PAGE – /services
+==================================================
+
+Create a dedicated photography and cinematography services page.
+
+Each service must have a detailed section or dedicated card.
+
+Services:
+
+1. Wedding Photography.
+2. Wedding Cinematography.
+3. Pre-Wedding Photography.
+4. Pre-Wedding Cinematic Films.
+5. Engagement Photography.
+6. Haldi & Mehendi Photography.
+7. Birthday Photography.
+8. Corporate Event Photography.
+9. Maternity Photography.
+10. Baby Photography.
+11. Family Portraits.
+12. Traditional Photography.
+13. Drone Photography.
+14. Product Photography.
+15. Professional Portrait Photography.
+
+For every service include:
+
+- Service image.
+- Service name.
+- Detailed description.
+- What is included.
+- Key benefits.
+- Available photography styles.
+- Related portfolio examples.
+- CTA to inquire or book.
+
+Add a service comparison section where appropriate.
+
+==================================================
+9. CATEGORIES PAGE – /categories
+==================================================
+
+Create a dedicated category discovery page.
+
+Use a visually attractive image-first grid.
+
+Each category card should include:
+
+- Large photography image.
+- Category title.
+- Description.
+- Number of demo images.
+- Explore Gallery button.
+- Premium hover interactions.
+- Smooth image reveal animation.
+
+Create separate dedicated pages for each category.
+
+INDIVIDUAL CATEGORY PAGE REQUIREMENTS:
+
+Example: /categories/wedding
+
+1. Full-width category hero.
+2. Category title and description.
+3. Short introduction.
+4. Featured photography.
+5. Image and video gallery.
+6. Photography styles.
+7. Related services.
+8. Sample photography packages or inquiry CTA.
+9. Frequently asked questions.
+10. Related categories.
+11. Booking CTA.
+
+Use the same reusable category page component, but provide unique data, images, descriptions, and content for every category.
+
+For example:
+
+Wedding:
+Indian wedding ceremonies, bride and groom portraits, mandap photography, pheras, varmala, family portraits, baraat, and candid moments.
+
+Pre-Wedding:
+Romantic couple portraits, cinematic locations, traditional Indian outfits, outdoor photography, and creative concepts.
+
+Haldi:
+Yellow-themed ceremonies, turmeric rituals, candid emotions, family celebrations, and vibrant decorations.
+
+Mehendi:
+Mehendi designs, bridal portraits, family interactions, colorful decor, and celebration moments.
+
+Birthday:
+Birthday decorations, cake cutting, candid moments, family photography, and event highlights.
+
+==================================================
+10. GALLERY PAGE – /gallery
+==================================================
+
+This is one of the most important pages.
+
+Create an immersive photography gallery containing BOTH IMAGES AND VIDEOS IN THE SAME GALLERY.
+
+Do not create separate image-only and video-only gallery experiences.
+
+Requirements:
+
+- Masonry image/video grid.
+- Mixed aspect ratios.
+- Images and videos displayed together.
+- Category filters.
+- All, Wedding, Pre-Wedding, Haldi, Mehendi, Birthday, Events, Engagement, and other filters.
+- Search functionality.
+- Image and video indicators.
+- Video play button.
+- Hover animations.
+- Lazy loading.
+- Infinite scroll or Load More functionality.
+- Lightbox experience.
+- Fullscreen viewing.
+- Previous/Next navigation.
+- Keyboard navigation.
+- Video playback with controls.
+- Responsive gallery layout.
+
+When someone clicks an image:
+Open a fullscreen image viewer.
+
+When someone clicks a video:
+Open the same fullscreen viewer with video playback.
+
+Gallery item data should support:
+
+{
+  id: string;
+  type: "image" | "video";
+  title: string;
+  category: string;
+  thumbnail: string;
+  src: string;
+  description: string;
+  aspectRatio?: string;
+}
+
+Add a premium project detail experience at /gallery/:slug.
+
+Include project introduction, image/video collection, event information, and related work.
+
+==================================================
+11. CONTACT PAGE – /contact
+==================================================
+
+Create a complete contact page.
+
+Sections:
+
+1. Contact Hero.
+2. Contact Introduction.
+3. Contact Information.
+4. Contact Form.
+5. Studio Address.
+6. Google Maps Embed Placeholder.
+7. Cities We Serve.
+8. Social Media Links.
+9. Frequently Asked Questions.
+10. Booking CTA.
+
+Contact form fields:
+
+- Full Name.
+- Email Address.
+- Mobile Number.
+- Event Type.
+- Event Date.
+- City.
+- Message.
+
+Use React Hook Form and Zod.
+
+Frontend-only submission:
+- Validate every required field.
+- Display inline validation messages.
+- Show loading state.
+- Display a professional success message.
+- Provide a frontend demo submission flow.
+- Do not pretend a real email or database submission happened.
+- Prepare the form for future API integration.
+
+==================================================
+12. BOOKING PAGE – /booking
+==================================================
+
+Create a premium multi-step booking experience.
+
+STEP 1: EVENT DETAILS
+
+- Select event category.
+- Event name.
+- Event date.
+- Event duration.
+- Event location.
+- City.
+
+STEP 2: PERSONAL DETAILS
+
+- Full name.
+- Email.
+- Mobile number.
+- WhatsApp number.
+
+STEP 3: PHOTOGRAPHY REQUIREMENTS
+
+- Photography.
+- Cinematography.
+- Both.
+- Drone coverage.
+- Traditional photography.
+- Candid photography.
+- Photo album.
+- Pre-wedding shoot.
+
+STEP 4: BUDGET AND ADDITIONAL INFORMATION
+
+- Estimated budget range.
+- Number of guests.
+- Additional requirements.
+- Message.
+
+STEP 5: REVIEW AND CONFIRM
+
+Display all entered information in a clean booking summary.
+
+Requirements:
+
+- Step progress indicator.
+- Back and Next buttons.
+- Form validation.
+- Date validation.
+- Mobile number validation.
+- Responsive form design.
+- Booking confirmation screen.
+- Save demo booking data to localStorage.
+- Generate a unique demo booking reference.
+- Provide an option to start a WhatsApp inquiry using the configured studio number.
+- Allow users to edit their details before confirmation.
+
+IMPORTANT:
+Clearly label this as a frontend booking demonstration. Do not claim that a real booking has been confirmed or that a slot is reserved without backend integration.
+
+==================================================
+13. FOOTER
+==================================================
+
+Create a large, premium, multi-column footer.
+
+Include:
+
+COLUMN 1:
+Studio logo, short introduction, tagline.
+
+COLUMN 2:
+Quick Links:
+Home, About, Services, Gallery, Categories, Contact.
+
+COLUMN 3:
+Photography Categories:
+Wedding, Pre-Wedding, Engagement, Haldi, Mehendi, Birthday, Events, Maternity.
+
+COLUMN 4:
+Contact:
+Phone, Email, Address, Business Hours.
+
+COLUMN 5:
+Social Media:
+Instagram, Facebook, YouTube, Pinterest.
+
+Additional footer sections:
+
+- Cities We Serve.
+- Newsletter UI with frontend validation.
+- Privacy Policy.
+- Terms & Conditions.
+- Copyright.
+- Back to Top.
+- WhatsApp floating button.
+
+Make the footer visually attractive with dark charcoal or burgundy backgrounds, ivory text, and subtle gold accents.
+
+==================================================
+14. ANIMATION AND INTERACTION SYSTEM
+==================================================
+
+Use high-quality, smooth, premium animations.
+
+FRAMER MOTION:
+
+- Page transitions.
+- Fade-in animations.
+- Staggered text reveals.
+- Image entrance animations.
+- Hover interactions.
+- Modal transitions.
+- Navigation animations.
+- Scroll-triggered sections.
+
+GSAP:
+
+- Cinematic hero animation.
+- ScrollTrigger-based image reveals.
+- Parallax photography sections.
+- Horizontal scrolling gallery where appropriate.
+- Text masking effects.
+- Pinning selected editorial sections.
+- Smooth transition between storytelling sections.
+
+3D EFFECTS:
+
+Use React Three Fiber or Three.js selectively.
+
+Add:
+
+- Subtle 3D floating photography frames.
+- Interactive image tilt.
+- 3D card hover effects.
+- Depth-based image layers.
+- Subtle perspective transitions.
+- Interactive decorative visual elements.
+
+Do not overload the entire website with 3D.
+
+3D should enhance the photography experience, not distract from photographs.
+
+IMAGE FLIP AND TRANSITION EFFECTS:
+
+Implement premium image transitions such as:
+
+- Image flip reveal.
+- 3D card flip.
+- Image rotation on hover.
+- Smooth image zoom.
+- Clip-path image reveals.
+- Image-to-image transition effects.
+- Staggered image grids.
+- Parallax image movement.
+- Image stack animations.
+
+Use effects selectively and maintain professional visual consistency.
+
+SCROLL EXPERIENCE:
+
+- Smooth scrolling.
+- Animated section entrances.
+- Scroll progress indicator.
+- Back-to-top functionality.
+- Subtle parallax.
+- No excessive scroll hijacking.
+
+IMPORTANT:
+Respect prefers-reduced-motion and provide lightweight fallbacks for low-powered devices.
+
+==================================================
+15. IMAGE AND VIDEO ASSET REQUIREMENTS
+==================================================
+
+Photography quality is the most important visual aspect of this website.
+
+Use high-quality Indian photography.
+
+Prioritize:
+
+- Indian brides and grooms.
+- Indian wedding rituals.
+- Indian traditional clothing.
+- Sarees and lehengas.
+- Sherwanis.
+- Mandap decorations.
+- Haldi ceremonies.
+- Mehendi celebrations.
+- Indian family portraits.
+- Indian engagement ceremonies.
+- Indian birthday celebrations.
+- Indian maternity photography.
+- Indian cultural events.
+- Indian pre-wedding shoots.
+
+The visual style must clearly represent Indian culture.
+
+Avoid:
+- Foreign wedding-only imagery.
+- Western church weddings.
+- European countryside wedding concepts as the main aesthetic.
+- Generic business stock photographs.
+- Repeated images across every section.
+- Low-quality images.
+- Broken image URLs.
+
+Use reliable, appropriately licensed image sources or local image assets.
+
+Centralize image/video URLs in structured data files.
+
+Create graceful fallback images when an asset fails.
+
+For videos, use lightweight thumbnails and load actual videos only when required.
+
+Do not place large autoplay videos throughout the website.
+
+==================================================
+16. RESPONSIVE DESIGN
+==================================================
+
+The website must work perfectly on:
+
+- Small mobile: 320px–375px.
+- Standard mobile: 375px–480px.
+- Large mobile: 480px–640px.
+- Tablets: 640px–1024px.
+- Laptops: 1024px–1440px.
+- Desktop: 1440px–1920px.
+- Large desktop: 1920px–2560px.
+- 4K displays and large-screen TVs.
+
+SPECIAL REQUIREMENT: LARGE TV AND ULTRAWIDE DISPLAY SUPPORT.
+
+Design dedicated responsive behavior for large-screen displays.
+
+On large TVs:
+
+- Use wide cinematic hero layouts.
+- Increase image presentation size.
+- Use balanced maximum-width content containers.
+- Avoid excessively stretched paragraphs.
+- Increase typography proportionally.
+- Maintain visual balance.
+- Support ultrawide image compositions.
+- Ensure galleries use more columns where appropriate.
+- Preserve appropriate spacing and readability.
+
+Never simply stretch the mobile layout to fit large screens.
+
+Use responsive typography with clamp(), fluid spacing, CSS Grid, and flexible containers.
+
+==================================================
+17. CONTENT AND COPYWRITING
+==================================================
+
+Do not create an empty or minimal website.
+
+Write professional, detailed, meaningful content for every page.
+
+Each page must have:
+
+- Attractive headings.
+- Supporting descriptions.
+- Relevant paragraphs.
+- Clear calls to action.
+- SEO-friendly page titles.
+- Relevant photography terminology.
+- Contextual internal links.
+
+Use natural Indian English.
+
+Avoid repetitive generic content.
+
+Use authentic Indian cultural references and photography terminology.
+
+Create meaningful sample projects and clearly mark fictional client details as demo content.
+
+==================================================
+18. SEO AND ACCESSIBILITY
+==================================================
+
+Implement:
+
+- Unique page titles.
+- Meta descriptions.
+- Canonical URL placeholders.
+- Open Graph metadata.
+- Twitter card metadata.
+- Semantic HTML.
+- Proper heading hierarchy.
+- Image alt attributes.
+- Descriptive link text.
+- Accessible forms.
+- Keyboard navigation.
+- Focus states.
+- Responsive image loading.
+- Lazy loading.
+- Basic structured data placeholders for LocalBusiness and ProfessionalService.
+
+Do not add fake reviews, fake business ratings, or false structured data claims.
+
+==================================================
+19. PERFORMANCE OPTIMIZATION
+==================================================
+
+Maintain excellent performance.
+
+Implement:
+
+- Route-based code splitting.
+- Lazy-loaded pages.
+- Lazy-loaded images.
+- Responsive image sizing.
+- WebP/AVIF where available.
+- Optimized video delivery.
+- Dynamic imports for heavy 3D modules.
+- Avoid unnecessary React re-renders.
+- Proper component memoization where useful.
+- Lightweight animations.
+- Proper cleanup of GSAP and event listeners.
+- Avoid excessive dependencies.
+
+Target strong Lighthouse scores for performance, accessibility, SEO, and best practices.
+
+Do not sacrifice usability or image quality to achieve artificial performance scores.
+
+==================================================
+20. PROJECT ARCHITECTURE
+==================================================
+
+Maintain a clean and scalable frontend structure.
+
+Suggested structure:
+
+src/
+  assets/
+    images/
+    videos/
+    logo/
+  components/
+    common/
+    layout/
+    navigation/
+    footer/
+    buttons/
+    cards/
+    gallery/
+    animations/
+    forms/
+  pages/
+    Home/
+    About/
+    Services/
+    Categories/
+    CategoryDetails/
+    Gallery/
+    GalleryDetails/
+    Contact/
+    Booking/
+    Legal/
+    NotFound/
+  data/
+    studio.ts
+    navigation.ts
+    categories.ts
+    services.ts
+    gallery.ts
+    testimonials.ts
+    cities.ts
+    faqs.ts
+  hooks/
+  layouts/
+  routes/
+  schemas/
+  types/
+  utils/
+  styles/
+  App.tsx
+  main.tsx
+
+Use reusable components and strongly typed data models.
+
+Avoid:
+- Single-file applications.
+- Massive JSX components.
+- Duplicated page layouts.
+- Hardcoded content everywhere.
+- Inconsistent styling.
+- Unnecessary useEffect hooks.
+- Unnecessary dependencies.
+
+==================================================
+21. FINAL DEVELOPMENT REQUIREMENTS
+==================================================
+
+Before considering the project complete:
+
+1. Build every required page.
+2. Verify all routes.
+3. Verify navigation and footer links.
+4. Verify category-wise page navigation.
+5. Verify image and video gallery behavior.
+6. Verify image/video lightbox functionality.
+7. Verify gallery category filters.
+8. Verify search functionality.
+9. Verify booking form validation.
+10. Verify booking steps and localStorage persistence.
+11. Verify contact form interactions.
+12. Verify mobile navigation.
+13. Verify all animations.
+14. Verify large-screen TV responsiveness.
+15. Verify there are no broken images.
+16. Verify there are no console errors.
+17. Verify there are no TypeScript errors.
+18. Verify there are no build errors.
+19. Verify accessibility and keyboard interactions.
+20. Verify performance and loading behavior.
+
+Use real working frontend interactions rather than decorative buttons.
+
+Every CTA must navigate somewhere meaningful or perform a defined action.
+
+All category cards must open their respective category pages.
+
+All gallery items must open the appropriate image/video viewer.
+
+All forms must provide validation and meaningful frontend feedback.
+
+Do not leave TODO sections, empty pages, dummy buttons, or unfinished layouts.
+
+==================================================
+FINAL DESIGN EXPECTATION
+==================================================
+
+The final website should feel like a premium, established Indian photography studio with:
+
+- Cinematic photography.
+- Indian wedding aesthetics.
+- Luxury editorial design.
+- Beautiful typography.
+- Warm and elegant colors.
+- Immersive image and video galleries.
+- Smooth 2D and 3D animations.
+- Excellent storytelling.
+- Professional content.
+- Beautiful page transitions.
+- Fully functional frontend interactions.
+- Perfect responsive layouts.
+- Premium desktop and large-TV experiences.
+
+The most important priority is the visual quality of the website.
+
+Make every page feel intentionally designed, rich in content, and visually different while maintaining a consistent brand identity.
+
+Do not deliver a generic template.
+
+Build a complete, production-quality frontend experience.
