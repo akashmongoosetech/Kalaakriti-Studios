@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const { ApiError } = require('../utils/apiResponse');
 
 /**
@@ -61,8 +62,19 @@ function validate(schema, property = 'body') {
   };
 }
 
+function validateObjectId(paramName = 'id') {
+  return function objectIdMiddleware(req, _res, next) {
+    const rawId = req.params?.[paramName];
+    if (!rawId || !mongoose.Types.ObjectId.isValid(String(rawId))) {
+      return next(new ApiError(400, `Invalid record identifier: ${paramName}.`));
+    }
+    return next();
+  };
+}
+
 module.exports = {
   sanitizeObject,
   sanitizeRequest,
   validate,
+  validateObjectId,
 };

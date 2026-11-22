@@ -4,50 +4,11 @@ const {
   splitFullName,
   generateContactId,
   escapeRegex,
+  buildCsv,
 } = require('../utils/formatters');
 const { recordActivity } = require('../services/activity.service');
 
-const createPublicContact = asyncHandler(async (req, res) => {
-  const payload = req.body;
-  const split = splitFullName(payload.fullName);
-  const firstName = (payload.firstName && payload.firstName.trim()) || split.firstName;
-  const lastName = (payload.lastName && payload.lastName.trim()) || split.lastName;
-  const fullName = `${firstName} ${lastName}`.trim();
-
-  const contact = await Contact.create({
-    contactId: generateContactId(),
-    firstName,
-    lastName,
-    fullName,
-    email: payload.email.trim().toLowerCase(),
-    mobile: (payload.mobile || payload.phone || '').trim(),
-    subject:
-      (payload.subject && payload.subject.trim()) ||
-      `${payload.eventType} Inquiry — ${payload.city}`,
-    eventType: payload.eventType.trim(),
-    city: payload.city.trim(),
-    eventDate: (payload.eventDate || '').trim(),
-    message: payload.message.trim(),
-    status: 'New',
-    source: payload.source === 'admin_demo' ? 'admin_demo' : 'public_form',
-  });
-
-  await recordActivity({
-    type: 'contact_received',
-    title: 'New Contact Inquiry',
-    description: `${contact.fullName} inquired about ${contact.eventType} in ${contact.city}.`,
-    entityType: 'contact',
-    entityId: contact._id.toString(),
-  });
-
-  return sendSuccess(res, {
-    statusCode: 201,
-    message: 'Your inquiry has been received. Our studio team will get back to you shortly.',
-    data: contact.toClientJSON(),
-  });
-});
-
-const listAdminContacts = asyncHandler(async (req, res) => {
+function buildContactFilter(query = {}) {
   const {
     search = '',
     status = 'All',
@@ -55,11 +16,8 @@ const listAdminContacts = asyncHandler(async (req, res) => {
     city = 'All',
     dateFrom = '',
     dateTo = '',
-    sortBy = 'newest',
     view = 'active',
-    page = '1',
-    limit = '10',
-  } = req.query;
+  } = query;
 
   const isTrash = view === 'trash';
   const filter = isTrash ? { deletedAt: { $ne: null } } : { deletedAt: null };
@@ -106,6 +64,94 @@ const listAdminContacts = asyncHandler(async (req, res) => {
       { message: regex },
     ];
   }
+
+  return filter;
+}
+
+const createPublicContact = asyncHandler(async (req, res) => {
+  const payload = req.body;
+  const split = splitFullName(payload.fullName);
+  const firstName = (payload.firstName && payload.firstName.trim()) || split.firstName;
+  const lastName = (payload.lastName && payload.lastName.trim()) || split.lastName;
+  const fullName = `${firstName} ${lastName}`.trim();
+
+  const contact = await Contact.create({
+    contactId: generateContactId(),
+    firstName,
+    lastName,
+    fullName,
+    email: payload.email.trim().toLowerCase(),
+    mobile: (payload.mobile || payload.phone || '').trim(),
+    subject:
+      (payload.subject && payload.subject.trim()) ||
+      `${payload.eventType} Inquiry — ${payload.city}`,
+    eventType: payload.eventType.trim(),
+    city: payload.city.trim(),
+    eventDate: (payload.eventDate || '').trim(),
+    message: payload.message.trim(),
+    status: 'New',
+    source: payload.source === 'admin_demo' ? 'admin_demo' : 'public_form',
+  });
+
+  await recordActivity({
+    type: 'contact_received',
+    title: 'New Contact Inquiry',
+    description: `${contact.fullName} inquired about ${contact.eventType} in ${contact.city}.`,
+    entityType: 'contact',
+    entityId: contact._id.toString(),
+  });
+
+  return sendSuccess(res, {
+    statusCode: 201,
+    message: 'Your inquiry has been received. Our studio team will get back to you shortly.',
+    data: contact.toClientJSON(),
+  });
+});
+
+const createAdminContact = asyncHandler(async (req, res) => {
+  const payload = req.body;
+  const split = splitFullName(payload.fullName);
+  const firstName = (payload.firstName && payload.firstName.trim()) || split.firstName;
+  const lastName = (payload.lastName && payload.lastName.trim()) || split.lastName;
+  const fullName = `${firstName} ${lastName}`.trim();
+
+  const contact = await Contact.create({
+    contactId: generateContactId(),
+    firstName,
+    lastName,
+    fullName,
+    email: payload.email.trim().toLowerCase(),
+    mobile: (payload.mobile || payload.phone || '').trim(),
+    subject:
+      (payload.subject && payload.subject.trim()) ||
+      `${payload.eventType} Inquiry — ${payload.city}`,
+    eventType: payload.eventType.trim(),
+    city: payload.city.trim(),
+    eventDate: (payload.eventDate || '').trim(),
+    message: payload.message.trim(),
+    status: 'New',
+    source: 'admin_demo',
+  });
+
+  await recordActivity({
+    type: 'contact_received',
+    title: 'Contact Logged by Admin',
+    description: `${req.admin.firstName} logged inquiry ${contact.contactId} for ${contact.fullName} (${contact.city}).`,
+    entityType: 'contact',
+    entityId: contact._id.toString(),
+    actorId: req.admin._id,
+  });
+
+  return sendSuccess(res, {
+    statusCode: 201,
+    message: 'Contact inquiry created successfully.',
+    data: contact.toClientJSON(),
+  });
+});
+
+const listAdminContacts = asyncHandler(async (req, res) => {
+  const { sortBy = 'newest', page = '1', limit = '10' } = req.query;
+  const filter = buildContactFilter(req.query);
 
   const sortMap = {
     newest: { createdAt: -1 },
@@ -312,12 +358,119 @@ const permanentDeleteAdminContact = asyncHandler(async (req, res) => {
   });
 });
 
+const exportAdminContactsCsv = asyncHandler(async (req, res) => {
+  const filter = buildContactFilter(req.query);
+  const docs = await Contact.find(filter).sort({ createdAt: -1 }).limit(1000);
+
+  const headers = [
+    'Contact ID',
+    'Full Name',
+    'Email',
+    'Mobile',
+    'Event Type',
+    'City',
+    'Event Date',
+    'Subject',
+    'Status',
+    'Submitted At',
+    'Message',
+  ];
+
+  const rows = docs.map((c) => [
+    c.contactId,
+    c.fullName,
+    c.email,
+    c.mobile,
+    c.eventType,
+    c.city,
+    c.eventDate || '',
+    c.subject,
+    c.status,
+    c.createdAt ? c.createdAt.toISOString() : '',
+    c.message,
+  ]);
+
+  const csvContent = buildCsv(headers, rows);
+  const filename = `kalaakriti-contacts-${new Date().toISOString().slice(0, 10)}.csv`;
+
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  return res.status(200).send(csvContent);
+});
+
+const bulkUpdateContactStatus = asyncHandler(async (req, res) => {
+  const { ids, status } = req.body;
+  const result = await Contact.updateMany(
+    { _id: { $in: ids } },
+    { $set: { status } }
+  );
+
+  await recordActivity({
+    type: 'status_changed',
+    title: 'Bulk Contact Status Update',
+    description: `Updated ${result.modifiedCount} contact inquiries to status "${status}".`,
+    entityType: 'contact',
+    entityId: ids.join(','),
+    actorId: req.admin._id,
+  });
+
+  return sendSuccess(res, {
+    statusCode: 200,
+    message: `Updated ${result.modifiedCount} contact inquiry record(s) to ${status}.`,
+    data: {
+      matchedCount: result.matchedCount,
+      modifiedCount: result.modifiedCount,
+      status,
+    },
+  });
+});
+
+const bulkDeleteContacts = asyncHandler(async (req, res) => {
+  const { ids, permanent = false } = req.body;
+  let affectedCount = 0;
+
+  if (permanent) {
+    const result = await Contact.deleteMany({ _id: { $in: ids } });
+    affectedCount = result.deletedCount;
+  } else {
+    const result = await Contact.updateMany(
+      { _id: { $in: ids }, deletedAt: null },
+      { $set: { deletedAt: new Date() } }
+    );
+    affectedCount = result.modifiedCount;
+  }
+
+  await recordActivity({
+    type: 'contact_deleted',
+    title: permanent ? 'Bulk Contacts Permanently Deleted' : 'Bulk Contacts Moved to Trash',
+    description: `${permanent ? 'Permanently deleted' : 'Moved to Trash'} ${affectedCount} contact inquiries.`,
+    entityType: 'contact',
+    entityId: ids.join(','),
+    actorId: req.admin._id,
+  });
+
+  return sendSuccess(res, {
+    statusCode: 200,
+    message: permanent
+      ? `Permanently deleted ${affectedCount} contact(s).`
+      : `Moved ${affectedCount} contact(s) to Trash.`,
+    data: {
+      affectedCount,
+      permanent,
+    },
+  });
+});
+
 module.exports = {
   createPublicContact,
+  createAdminContact,
   listAdminContacts,
+  exportAdminContactsCsv,
   getAdminContactById,
   updateAdminContact,
   patchAdminContactStatus,
+  bulkUpdateContactStatus,
+  bulkDeleteContacts,
   softDeleteAdminContact,
   restoreAdminContact,
   permanentDeleteAdminContact,

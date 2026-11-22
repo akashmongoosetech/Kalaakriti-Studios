@@ -56,14 +56,35 @@ const updateContactSchema = Joi.object({
     .required(),
 });
 
+const objectIdRule = Joi.string()
+  .trim()
+  .pattern(/^[0-9a-fA-F]{24}$/)
+  .messages({
+    'string.pattern.base': 'Each ID must be a valid 24-character record identifier.',
+  });
+
 const updateContactStatusSchema = Joi.object({
   status: Joi.string()
     .valid(...Contact.CONTACT_STATUSES)
     .required(),
 });
 
+const bulkUpdateContactStatusSchema = Joi.object({
+  ids: Joi.array().items(objectIdRule).min(1).max(50).unique().required(),
+  status: Joi.string()
+    .valid(...Contact.CONTACT_STATUSES)
+    .required(),
+});
+
+const bulkDeleteContactsSchema = Joi.object({
+  ids: Joi.array().items(objectIdRule).min(1).max(50).unique().required(),
+  permanent: Joi.boolean().default(false),
+});
+
 module.exports = {
   createContactSchema,
   updateContactSchema,
   updateContactStatusSchema,
+  bulkUpdateContactStatusSchema,
+  bulkDeleteContactsSchema,
 };

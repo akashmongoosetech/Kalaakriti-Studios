@@ -19,6 +19,32 @@ function extractToken(req) {
   return { token: null, source: null };
 }
 
+function isTrustedCookieMutation(req) {
+  if (req.headers['x-requested-with']) {
+    return true;
+  }
+
+  const origin = req.headers.origin;
+  if (!origin) {
+    return false;
+  }
+
+  if (env.allowedOrigins.includes(origin)) {
+    return true;
+  }
+
+  try {
+    const parsedOrigin = new URL(origin);
+    const forwardedHost = (req.headers['x-forwarded-host'] || req.headers.host || '')
+      .split(',')[0]
+      .trim()
+      .toLowerCase();
+    return Boolean(forwardedHost && parsedOrigin.host.toLowerCase() === forwardedHost);
+  } catch {
+    return false;
+  }
+}
+
 async function authenticateAdmin(req, _res, next) {
   try {
     const { token, source } = extractToken(req);
@@ -28,11 +54,8 @@ async function authenticateAdmin(req, _res, next) {
 
     // CSRF protection for cookie-authenticated state-changing requests
     const isMutating = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method.toUpperCase());
-    if (source === 'cookie' && isMutating) {
-      const origin = req.headers.origin;
-      if (origin && !env.allowedOrigins.includes(origin)) {
-        return next(new ApiError(403, 'Cross-origin request denied.'));
-      }
+    if (source === 'cookie' && isMutating && !isTrustedCookieMutation(req)) {
+      return next(new ApiError(403, 'Cross-origin request denied.'));
     }
 
     let decoded;
@@ -45,6 +68,12 @@ async function authenticateAdmin(req, _res, next) {
     const admin = await Admin.findById(decoded.sub);
     if (!admin) {
       return next(new ApiError(401, 'Administrator account no longer exists.'));
+    }
+
+    const expectedVersion = Number(admin.tokenVersion || 0);
+    const tokenVersion = Number(decoded.tv || 0);
+    if (tokenVersion !== expectedVersion) {
+      return next(new ApiError(401, 'Session has been revoked after a password update. Please sign in again.'));
     }
 
     req.admin = admin;

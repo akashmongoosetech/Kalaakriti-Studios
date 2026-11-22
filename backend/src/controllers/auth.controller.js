@@ -11,6 +11,15 @@ const {
 
 const BCRYPT_SALT_ROUNDS = 12;
 
+function isHttpsRequest(req) {
+  if (!req) return env.isProduction;
+  const forwardedProto = String(req.headers['x-forwarded-proto'] || '')
+    .split(',')[0]
+    .trim()
+    .toLowerCase();
+  return Boolean(env.isProduction || req.secure || forwardedProto === 'https');
+}
+
 function signAuthToken(admin, rememberMe = false) {
   const expiresIn = rememberMe ? env.jwtRememberExpiresIn : env.jwtExpiresIn;
   return jwt.sign(
@@ -19,31 +28,36 @@ function signAuthToken(admin, rememberMe = false) {
       username: admin.username,
       email: admin.email,
       role: admin.role,
+      tv: Number(admin.tokenVersion || 0),
     },
     env.jwtSecret,
     { expiresIn }
   );
 }
 
-function setAuthCookie(res, token, rememberMe = false) {
+function setAuthCookie(res, token, rememberMe = false, req = null) {
   const maxAgeMs = rememberMe
     ? 30 * 24 * 60 * 60 * 1000
     : 7 * 24 * 60 * 60 * 1000;
+  const useSecureCookie = isHttpsRequest(req);
 
   res.cookie(env.cookieName, token, {
     httpOnly: true,
-    secure: env.isProduction,
-    sameSite: env.isProduction ? 'none' : 'lax',
+    secure: useSecureCookie,
+    sameSite: useSecureCookie ? 'none' : 'lax',
+    ...(useSecureCookie ? { partitioned: true } : {}),
     maxAge: maxAgeMs,
     path: '/',
   });
 }
 
-function clearAuthCookie(res) {
+function clearAuthCookie(res, req = null) {
+  const useSecureCookie = isHttpsRequest(req);
   res.clearCookie(env.cookieName, {
     httpOnly: true,
-    secure: env.isProduction,
-    sameSite: env.isProduction ? 'none' : 'lax',
+    secure: useSecureCookie,
+    sameSite: useSecureCookie ? 'none' : 'lax',
+    ...(useSecureCookie ? { partitioned: true } : {}),
     path: '/',
   });
 }
@@ -109,7 +123,7 @@ const signup = asyncHandler(async (req, res) => {
     });
 
     const token = signAuthToken(admin, true);
-    setAuthCookie(res, token, true);
+    setAuthCookie(res, token, true, req);
 
     return sendSuccess(res, {
       statusCode: 201,
@@ -152,7 +166,7 @@ const login = asyncHandler(async (req, res) => {
   await admin.save();
 
   const token = signAuthToken(admin, Boolean(rememberMe));
-  setAuthCookie(res, token, Boolean(rememberMe));
+  setAuthCookie(res, token, Boolean(rememberMe), req);
 
   return sendSuccess(res, {
     statusCode: 200,
@@ -175,8 +189,22 @@ const me = asyncHandler(async (req, res) => {
   });
 });
 
-const logout = asyncHandler(async (_req, res) => {
-  clearAuthCookie(res);
+const refreshSession = asyncHandler(async (req, res) => {
+  const token = signAuthToken(req.admin, true);
+  setAuthCookie(res, token, true, req);
+
+  return sendSuccess(res, {
+    statusCode: 200,
+    message: 'Administrator session refreshed.',
+    data: {
+      user: req.admin.toSafeJSON(),
+      token,
+    },
+  });
+});
+
+const logout = asyncHandler(async (req, res) => {
+  clearAuthCookie(res, req);
   return sendSuccess(res, {
     statusCode: 200,
     message: 'Signed out successfully.',
@@ -205,6 +233,10 @@ module.exports = {
   signup,
   login,
   me,
+  refreshSession,
   logout,
   forgotPassword,
+  signAuthToken,
+  setAuthCookie,
+  clearAuthCookie,
 };

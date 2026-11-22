@@ -188,22 +188,30 @@ All endpoints return a consistent JSON envelope:
 | `POST` | `/api/admin/auth/signup` | Public | Register admin account (`multipart/form-data` supporting optional `profilePicture` upload) |
 | `POST` | `/api/admin/auth/login` | Public | Authenticate via `username`, `email`, or `mobile` + password; sets HttpOnly cookie & returns JWT |
 | `GET` | `/api/admin/auth/me` | JWT / Cookie | Restore & verify current admin session |
+| `POST` | `/api/admin/auth/refresh` | Admin | Issue a fresh JWT and refresh the active HttpOnly session cookie |
 | `POST` | `/api/admin/auth/logout` | Public | Clear session cookie |
 | `POST` | `/api/admin/auth/forgot-password` | Public | Non-enumerating password recovery request |
 
 ### Admin Dashboard & Profile (Protected)
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| `GET` | `/api/admin/dashboard` | Admin | Live MongoDB aggregations (KPIs, MoM deltas, 6-month charts, status & city breakdowns, recent activity) |
+| `GET` | `/api/admin/dashboard` (or `/overview`) | Admin | Live MongoDB aggregations (KPIs, MoM deltas, 6-month charts, status & category breakdowns, upcoming shoots, recent activity) |
+| `GET` | `/api/admin/dashboard/stats` | Admin | Lightweight KPI counters including active/trash counts and subscriber totals |
+| `GET` | `/api/admin/dashboard/activity` | Admin | Paginated studio audit log (`?page`, `?limit`, `?entityType=contact\|booking\|profile\|newsletter`) |
 | `GET` | `/api/admin/profile` | Admin | Fetch authenticated admin profile |
 | `PUT` | `/api/admin/profile` | Admin | Update profile fields & optional `profilePicture` upload (`multipart/form-data`) |
-| `PUT` | `/api/admin/profile/password` | Admin | Verify current bcrypt password and update to new hashed password |
+| `DELETE` | `/api/admin/profile/avatar` | Admin | Remove current profile picture and delete stored avatar file |
+| `PUT` | `/api/admin/profile/password` | Admin | Verify current bcrypt password, rotate session token version (revoking older sessions), and return a fresh JWT |
 
 ### Admin Contacts CRUD (Protected)
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| `GET` | `/api/admin/contacts` | Admin | Paginated list (`?view=active\|trash`, `?search`, `?status`, `?city`, `?eventType`, `?dateFrom`, `?dateTo`, `?sortBy`, `?sortOrder`, `?page`, `?limit`) |
-| `GET` | `/api/admin/contacts/:id` | Admin | Fetch single contact inquiry |
+| `GET` | `/api/admin/contacts` | Admin | Paginated list (`?view=active\|trash`, `?search`, `?status`, `?city`, `?eventType`, `?dateFrom`, `?dateTo`, `?sortBy`, `?page`, `?limit`) |
+| `POST` | `/api/admin/contacts` | Admin | Log a walk-in or phone contact inquiry directly from the admin panel |
+| `GET` | `/api/admin/contacts/export` | Admin | Download filtered contacts as a formula-safe CSV file |
+| `PATCH` | `/api/admin/contacts/bulk-status` | Admin | Update status across up to 50 contacts in one request |
+| `POST` | `/api/admin/contacts/bulk-delete` | Admin | Soft-delete or permanently delete up to 50 contacts |
+| `GET` | `/api/admin/contacts/:id` | Admin | Fetch single contact inquiry (validates ObjectId) |
 | `PUT` | `/api/admin/contacts/:id` | Admin | Update inquiry details & status |
 | `PATCH` | `/api/admin/contacts/:id/status` | Admin | Quick status update (`New`, `Contacted`, `In Progress`, `Converted`, `Closed`, `Spam`) |
 | `DELETE` | `/api/admin/contacts/:id` | Admin | Soft-delete inquiry (moves to Trash) |
@@ -213,10 +221,15 @@ All endpoints return a consistent JSON envelope:
 ### Admin Bookings CRUD (Protected)
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| `GET` | `/api/admin/bookings` | Admin | Paginated list (`?view=active\|trash`, `?search`, `?status`, `?category`, `?city`, `?dateFrom`, `?dateTo`, `?sortBy`, `?sortOrder`, `?page`, `?limit`) |
-| `GET` | `/api/admin/bookings/:id` | Admin | Fetch single booking record |
+| `GET` | `/api/admin/bookings` | Admin | Paginated list (`?view=active\|trash`, `?search`, `?status`, `?category`, `?city`, `?eventDate`, `?submissionDate`, `?sortBy`, `?page`, `?limit`) |
+| `POST` | `/api/admin/bookings` | Admin | Create a shoot booking directly from the admin panel |
+| `GET` | `/api/admin/bookings/upcoming` | Admin | Upcoming active shoots sorted chronologically (`?limit`) |
+| `GET` | `/api/admin/bookings/export` | Admin | Download filtered bookings as a formula-safe CSV file |
+| `PATCH` | `/api/admin/bookings/bulk-status` | Admin | Update status across up to 50 bookings in one request |
+| `POST` | `/api/admin/bookings/bulk-delete` | Admin | Soft-delete or permanently delete up to 50 bookings |
+| `GET` | `/api/admin/bookings/:id` | Admin | Fetch single booking record (validates ObjectId) |
 | `PUT` | `/api/admin/bookings/:id` | Admin | Update booking details, add-ons & status |
-| `PATCH` | `/api/admin/bookings/:id/status` | Admin | Quick status update (`Pending`, `Confirmed`, `Completed`, `Cancelled`) |
+| `PATCH` | `/api/admin/bookings/:id/status` | Admin | Quick status update (`Pending`, `Contacted`, `Quotation Sent`, `Confirmed`, `In Progress`, `Completed`, `Cancelled`, `Rejected`) |
 | `DELETE` | `/api/admin/bookings/:id` | Admin | Soft-delete booking (moves to Trash) |
 | `PATCH` | `/api/admin/bookings/:id/restore` | Admin | Restore booking from Trash |
 | `DELETE` | `/api/admin/bookings/:id/permanent` | Admin | Permanently remove booking from MongoDB |

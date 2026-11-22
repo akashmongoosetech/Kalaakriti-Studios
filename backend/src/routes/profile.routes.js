@@ -21,6 +21,8 @@ router.put(
   profileController.updateProfile
 );
 
+router.delete('/avatar', profileController.deleteAvatar);
+
 router.put('/password', validate(changePasswordSchema), profileController.changePassword);
 
 module.exports = router;

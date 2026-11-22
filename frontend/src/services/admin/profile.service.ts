@@ -1,6 +1,6 @@
 import type { AdminUser } from '../../types/admin.types';
 import type { AdminProfileUpdateValues } from '../../schemas/auth.schema';
-import { apiRequest, resolveMediaUrl } from '../api/httpClient';
+import { apiRequest, resolveMediaUrl, setAccessToken } from '../api/httpClient';
 import { emitDataChange } from './storage.util';
 
 export const profileService = {
@@ -39,12 +39,23 @@ export const profileService = {
     };
   },
 
+  async removeAvatar(): Promise<AdminUser> {
+    const res = await apiRequest<AdminUser>('/api/admin/profile/avatar', {
+      method: 'DELETE',
+    });
+    emitDataChange();
+    return {
+      ...res.data,
+      profilePicture: resolveMediaUrl(res.data.profilePicture),
+    };
+  },
+
   async changePassword(
     currentPassword: string,
     newPassword: string,
     confirmNewPassword: string
   ): Promise<void> {
-    await apiRequest<null>('/api/admin/profile/password', {
+    const res = await apiRequest<{ token?: string } | null>('/api/admin/profile/password', {
       method: 'PUT',
       body: {
         currentPassword,
@@ -52,5 +63,8 @@ export const profileService = {
         confirmNewPassword,
       },
     });
+    if (res.data?.token) {
+      setAccessToken(res.data.token);
+    }
   },
 };

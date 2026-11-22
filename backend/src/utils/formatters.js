@@ -83,6 +83,20 @@ function safeDeleteAvatarFile(avatarUrl) {
   });
 }
 
+function escapeCsvCell(value) {
+  const raw = value === null || value === undefined ? '' : String(value);
+  // Neutralize spreadsheet formula triggers (=, +, -, @, tab, CR)
+  const neutralized = /^[=+\-@\t\r]/.test(raw) ? `'${raw}` : raw;
+  const escaped = neutralized.replace(/"/g, '""');
+  return `"${escaped}"`;
+}
+
+function buildCsv(headers, rows) {
+  const headerLine = headers.map(escapeCsvCell).join(',');
+  const dataLines = rows.map((row) => row.map(escapeCsvCell).join(','));
+  return [headerLine, ...dataLines].join('\r\n');
+}
+
 module.exports = {
   UPLOADS_ROOT,
   AVATARS_DIR,
@@ -93,4 +107,6 @@ module.exports = {
   deriveUsername,
   escapeRegex,
   safeDeleteAvatarFile,
+  escapeCsvCell,
+  buildCsv,
 };

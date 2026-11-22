@@ -31,7 +31,34 @@ async function getRecentActivity(limit = 10) {
   return items.map((item) => item.toClientJSON());
 }
 
+async function listActivity({ page = 1, limit = 20, entityType = '' } = {}) {
+  const parsedPage = Math.max(1, parseInt(String(page), 10) || 1);
+  const parsedLimit = Math.min(100, Math.max(1, parseInt(String(limit), 10) || 20));
+  const skip = (parsedPage - 1) * parsedLimit;
+
+  const filter = {};
+  if (entityType && ['contact', 'booking', 'profile', 'newsletter'].includes(String(entityType))) {
+    filter.entityType = String(entityType);
+  }
+
+  const [docs, total] = await Promise.all([
+    ActivityLog.find(filter).sort({ createdAt: -1 }).skip(skip).limit(parsedLimit),
+    ActivityLog.countDocuments(filter),
+  ]);
+
+  return {
+    items: docs.map((item) => item.toClientJSON()),
+    pagination: {
+      page: parsedPage,
+      limit: parsedLimit,
+      total,
+      totalPages: Math.max(1, Math.ceil(total / parsedLimit)),
+    },
+  };
+}
+
 module.exports = {
   recordActivity,
   getRecentActivity,
+  listActivity,
 };

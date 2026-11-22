@@ -4,6 +4,7 @@ const { sendSuccess } = require('../utils/apiResponse');
 
 const authRoutes = require('./auth.routes');
 const profileRoutes = require('./profile.routes');
+const dashboardRoutes = require('./dashboard.routes');
 const { publicContactRoutes, adminContactRoutes } = require('./contact.routes');
 const { publicBookingRoutes, adminBookingRoutes } = require('./booking.routes');
 const { publicNewsletterRoutes, adminNewsletterRoutes } = require('./newsletter.routes');
@@ -12,7 +13,6 @@ const {
   testimonialPublicRoutes,
   testimonialAdminRoutes,
   instagramRoutes,
-  dashboardRoutes,
 } = require('./content.routes');
 
 const router = express.Router();

@@ -210,6 +210,43 @@ async function getDashboardOverview() {
   };
 }
 
+async function getDashboardQuickStats() {
+  const [
+    totalContacts,
+    newContacts,
+    trashedContacts,
+    totalBookings,
+    pendingBookings,
+    confirmedBookings,
+    completedBookings,
+    trashedBookings,
+    totalNewsletterSubscribers,
+  ] = await Promise.all([
+    Contact.countDocuments({ deletedAt: null }),
+    Contact.countDocuments({ deletedAt: null, status: 'New' }),
+    Contact.countDocuments({ deletedAt: { $ne: null } }),
+    Booking.countDocuments({ deletedAt: null }),
+    Booking.countDocuments({ deletedAt: null, status: 'Pending' }),
+    Booking.countDocuments({ deletedAt: null, status: 'Confirmed' }),
+    Booking.countDocuments({ deletedAt: null, status: 'Completed' }),
+    Booking.countDocuments({ deletedAt: { $ne: null } }),
+    NewsletterSubscriber.countDocuments({ status: 'active' }),
+  ]);
+
+  return {
+    totalContacts,
+    newContacts,
+    trashedContacts,
+    totalBookings,
+    pendingBookings,
+    confirmedBookings,
+    completedBookings,
+    trashedBookings,
+    totalNewsletterSubscribers,
+  };
+}
+
 module.exports = {
   getDashboardOverview,
+  getDashboardQuickStats,
 };

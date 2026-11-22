@@ -36,6 +36,13 @@ router.get(
   authController.me
 );
 
+router.post(
+  '/refresh',
+  authenticateAdmin,
+  authorizeRoles('Studio Administrator'),
+  authController.refreshSession
+);
+
 router.post('/logout', authController.logout);
 
 module.exports = router;

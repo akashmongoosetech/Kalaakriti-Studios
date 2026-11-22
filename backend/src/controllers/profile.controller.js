@@ -3,6 +3,7 @@ const Admin = require('../models/Admin');
 const { ApiError, sendSuccess, asyncHandler } = require('../utils/apiResponse');
 const { normalizeIndianMobile, safeDeleteAvatarFile } = require('../utils/formatters');
 const { recordActivity } = require('../services/activity.service');
+const { signAuthToken, setAuthCookie } = require('./auth.controller');
 
 const BCRYPT_SALT_ROUNDS = 12;
 
@@ -88,6 +89,32 @@ const updateProfile = asyncHandler(async (req, res) => {
   }
 });
 
+const deleteAvatar = asyncHandler(async (req, res) => {
+  const admin = req.admin;
+  const previousAvatar = admin.profilePicture;
+
+  if (previousAvatar) {
+    admin.profilePicture = '';
+    await admin.save();
+    safeDeleteAvatarFile(previousAvatar);
+
+    await recordActivity({
+      type: 'status_changed',
+      title: 'Admin Profile Photo Removed',
+      description: `${admin.firstName} ${admin.lastName} removed their profile avatar.`,
+      entityType: 'profile',
+      entityId: admin._id.toString(),
+      actorId: admin._id,
+    });
+  }
+
+  return sendSuccess(res, {
+    statusCode: 200,
+    message: 'Profile picture removed successfully.',
+    data: admin.toSafeJSON(),
+  });
+});
+
 const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
@@ -111,17 +138,33 @@ const changePassword = asyncHandler(async (req, res) => {
   }
 
   admin.passwordHash = await bcrypt.hash(newPassword, BCRYPT_SALT_ROUNDS);
+  admin.tokenVersion = Number(admin.tokenVersion || 0) + 1;
   await admin.save();
+
+  const refreshedToken = signAuthToken(admin, true);
+  setAuthCookie(res, refreshedToken, true, req);
+
+  await recordActivity({
+    type: 'status_changed',
+    title: 'Admin Password Changed',
+    description: `${admin.firstName} ${admin.lastName} updated account password and refreshed active session.`,
+    entityType: 'profile',
+    entityId: admin._id.toString(),
+    actorId: admin._id,
+  });
 
   return sendSuccess(res, {
     statusCode: 200,
     message: 'Password updated successfully.',
-    data: null,
+    data: {
+      token: refreshedToken,
+    },
   });
 });
 
 module.exports = {
   getProfile,
   updateProfile,
+  deleteAvatar,
   changePassword,
 };
