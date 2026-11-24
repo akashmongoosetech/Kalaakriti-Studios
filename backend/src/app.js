@@ -7,6 +7,8 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 
 const env = require('./config/env');
+const { ensureDatabaseReady } = require('./config/db');
+const { seedDatabase } = require('./config/seed');
 const apiRoutes = require('./routes');
 const { sanitizeRequest } = require('./middleware/validate.middleware');
 const { apiGeneralRateLimiter } = require('./middleware/rateLimit.middleware');
@@ -27,19 +29,43 @@ app.use(
   })
 );
 
+function isAllowedOrigin(origin, req) {
+  if (!origin) return true;
+  const normalizedOrigin = origin.trim().replace(/\/+$/, '');
+  if (env.allowedOrigins.includes(normalizedOrigin)) {
+    return true;
+  }
+
+  // Allow exact same-origin requests behind reverse proxies (Cloud Run, Render, Nginx)
+  try {
+    const parsedOrigin = new URL(normalizedOrigin);
+    const requestHost = (req.headers['x-forwarded-host'] || req.headers.host || '')
+      .split(',')[0]
+      .trim()
+      .toLowerCase();
+    if (requestHost && parsedOrigin.host.toLowerCase() === requestHost) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+
+  return false;
+}
+
 // Strict CORS configuration (no wildcard with credentials)
 app.use(
-  cors({
-    origin(origin, callback) {
-      // Allow same-origin requests, curl/health checks, or explicitly whitelisted origins
-      if (!origin || env.allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(new Error('CORS origin not allowed'));
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  cors((req, callback) => {
+    const origin = req.headers.origin;
+    if (isAllowedOrigin(origin, req)) {
+      return callback(null, {
+        origin: true,
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+      });
+    }
+    return callback(null, { origin: false });
   })
 );
 
@@ -64,6 +90,25 @@ app.use(
 
 // Apply general API rate limiter
 app.use('/api', apiGeneralRateLimiter);
+
+// Ensure database connection + seed complete before handling data routes (health endpoint stays non-blocking)
+async function requireDatabaseReady(req, res, next) {
+  if (req.path === '/health' || req.path === '/v1/health') {
+    return next();
+  }
+  try {
+    await ensureDatabaseReady(seedDatabase);
+    return next();
+  } catch (err) {
+    console.error('[db] Database unavailable for API request:', err.message);
+    return res.status(503).json({
+      success: false,
+      message: 'Service is initializing its database. Please retry in a moment.',
+    });
+  }
+}
+
+app.use('/api', requireDatabaseReady);
 
 // Mount REST API routes under /api (and /api/v1 alias)
 app.use('/api', apiRoutes);

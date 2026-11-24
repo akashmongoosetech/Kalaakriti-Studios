@@ -60,6 +60,106 @@ function buildLastSixMonths() {
   return months;
 }
 
+function buildLastNDays(days = 30) {
+  const safeDays = Math.min(90, Math.max(7, Number(days) || 30));
+  const now = new Date();
+  const todayUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const result = [];
+
+  for (let i = safeDays - 1; i >= 0; i -= 1) {
+    const d = new Date(todayUtc.getTime() - i * 24 * 60 * 60 * 1000);
+    const year = d.getUTCFullYear();
+    const month = d.getUTCMonth();
+    const day = d.getUTCDate();
+    const key = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const label = `${String(day).padStart(2, '0')} ${MONTH_SHORT[month]}`;
+    result.push({ key, label });
+  }
+
+  return {
+    days: result,
+    startUtc: new Date(todayUtc.getTime() - (safeDays - 1) * 24 * 60 * 60 * 1000),
+    prevStartUtc: new Date(todayUtc.getTime() - (safeDays * 2 - 1) * 24 * 60 * 60 * 1000),
+  };
+}
+
+async function getDailyTrends(days = 30) {
+  const { days: daySlots, startUtc, prevStartUtc } = buildLastNDays(days);
+
+  const [bookingDailyAgg, contactDailyAgg, prevBookingsCount, prevInquiriesCount] =
+    await Promise.all([
+      Booking.aggregate([
+        { $match: { deletedAt: null, createdAt: { $gte: startUtc } } },
+        {
+          $group: {
+            _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+            count: { $sum: 1 },
+          },
+        },
+      ]),
+      Contact.aggregate([
+        { $match: { deletedAt: null, createdAt: { $gte: startUtc } } },
+        {
+          $group: {
+            _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+            count: { $sum: 1 },
+          },
+        },
+      ]),
+      Booking.countDocuments({
+        deletedAt: null,
+        createdAt: { $gte: prevStartUtc, $lt: startUtc },
+      }),
+      Contact.countDocuments({
+        deletedAt: null,
+        createdAt: { $gte: prevStartUtc, $lt: startUtc },
+      }),
+    ]);
+
+  const bookingMap = new Map(bookingDailyAgg.map((row) => [row._id, row.count]));
+  const contactMap = new Map(contactDailyAgg.map((row) => [row._id, row.count]));
+
+  let totalBookings = 0;
+  let totalInquiries = 0;
+  let peakDayLabel = null;
+  let peakDayTotal = 0;
+
+  const series = daySlots.map((slot) => {
+    const bookings = bookingMap.get(slot.key) || 0;
+    const inquiries = contactMap.get(slot.key) || 0;
+    const total = bookings + inquiries;
+    totalBookings += bookings;
+    totalInquiries += inquiries;
+
+    if (total > peakDayTotal) {
+      peakDayTotal = total;
+      peakDayLabel = slot.label;
+    }
+
+    return {
+      date: slot.key,
+      label: slot.label,
+      bookings,
+      inquiries,
+      total,
+    };
+  });
+
+  return {
+    days: daySlots.length,
+    series,
+    summary: {
+      totalBookings,
+      totalInquiries,
+      bookingsChangePct: computeMoMChange(totalBookings, prevBookingsCount),
+      inquiriesChangePct: computeMoMChange(totalInquiries, prevInquiriesCount),
+      peakDayLabel,
+      peakDayTotal,
+      dailyAverage: Number(((totalBookings + totalInquiries) / daySlots.length).toFixed(1)),
+    },
+  };
+}
+
 async function getDashboardOverview() {
   const now = new Date();
   const currentMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
@@ -87,6 +187,7 @@ async function getDashboardOverview() {
     recentContactDocs,
     upcomingBookingDocs,
     recentActivity,
+    dailyTrends30d,
   ] = await Promise.all([
     Contact.countDocuments({ deletedAt: null }),
     Contact.countDocuments({ deletedAt: null, status: 'New' }),
@@ -149,6 +250,7 @@ async function getDashboardOverview() {
       .sort({ eventDate: 1 })
       .limit(5),
     getRecentActivity(10),
+    getDailyTrends(30),
   ]);
 
   const months = buildLastSixMonths();
@@ -201,6 +303,8 @@ async function getDashboardOverview() {
     },
     bookingsPerMonth,
     contactsPerMonth,
+    dailyTrends30d: dailyTrends30d.series,
+    trends30dSummary: dailyTrends30d.summary,
     statusDistribution,
     eventCategoryDistribution,
     recentBookings: recentBookingDocs.map((doc) => doc.toClientJSON()),
@@ -249,4 +353,5 @@ async function getDashboardQuickStats() {
 module.exports = {
   getDashboardOverview,
   getDashboardQuickStats,
+  getDailyTrends,
 };

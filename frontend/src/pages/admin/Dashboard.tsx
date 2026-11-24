@@ -40,6 +40,7 @@ import { ContactViewDialog } from '../../components/admin/ContactViewDialog';
 import { ContactEditDialog } from '../../components/admin/ContactEditDialog';
 import { BookingViewDialog } from '../../components/admin/BookingViewDialog';
 import { BookingEditDialog } from '../../components/admin/BookingEditDialog';
+import { BookingInquiryTrendsChart } from '../../components/admin/BookingInquiryTrendsChart';
 import { ConfirmDialog } from '../../components/admin/ConfirmDialog';
 import { useAdminAuth } from '../../hooks/admin/useAdminAuth';
 import { useDashboard } from '../../hooks/admin/useDashboard';
@@ -66,6 +67,8 @@ export default function AdminDashboardPage() {
     kpi,
     monthlyBookings,
     monthlyContacts,
+    dailyTrends30d,
+    trends30dSummary,
     bookingStatusDistribution,
     eventCategoryDistribution,
     recentBookings,
@@ -299,6 +302,15 @@ export default function AdminDashboardPage() {
           </motion.div>
         ))}
       </section>
+
+      {/* 30-Day Booking Trends & Inquiry Volume Showcase */}
+      <BookingInquiryTrendsChart
+        data={dailyTrends30d}
+        summary={trends30dSummary}
+        loading={loading}
+        onAddDemoBooking={handleAddDemoBooking}
+        onAddDemoContact={handleAddDemoContact}
+      />
 
       {/* Analytics Charts Grid (4 Recharts Visualizations) */}
       <section aria-label="Studio analytics charts" className="grid grid-cols-1 lg:grid-cols-2 gap-5">

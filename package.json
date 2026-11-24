@@ -3,6 +3,10 @@
   "private": true,
   "version": "1.0.0",
   "description": "Full-stack monorepo workspace for Kalaakriti Studios (React + Vite frontend, Node.js + Express + MongoDB backend)",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
     "dev": "node scripts/dev-orchestrator.cjs",
     "dev:frontend": "npm --prefix frontend run dev",
@@ -10,6 +14,6 @@
     "build": "npm --prefix frontend run build",
     "lint": "npm --prefix frontend run lint",
     "start": "SERVE_FRONTEND_DIST=true npm --prefix backend run start",
-    "install:all": "npm --prefix frontend install && npm --prefix backend install"
+    "install:all": "npm install"
   }
 }

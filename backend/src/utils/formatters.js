@@ -1,8 +1,22 @@
 const crypto = require('crypto');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
-const UPLOADS_ROOT = path.resolve(__dirname, '../uploads');
+function resolveUploadsRoot() {
+  const defaultRoot = path.resolve(__dirname, '../uploads');
+  try {
+    fs.mkdirSync(path.join(defaultRoot, 'avatars'), { recursive: true });
+    fs.accessSync(defaultRoot, fs.constants.W_OK);
+    return defaultRoot;
+  } catch {
+    const tmpRoot = path.join(os.tmpdir(), 'kalaakriti-uploads');
+    fs.mkdirSync(path.join(tmpRoot, 'avatars'), { recursive: true });
+    return tmpRoot;
+  }
+}
+
+const UPLOADS_ROOT = resolveUploadsRoot();
 const AVATARS_DIR = path.join(UPLOADS_ROOT, 'avatars');
 
 /**

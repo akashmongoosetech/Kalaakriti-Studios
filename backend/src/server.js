@@ -1,26 +1,24 @@
 const http = require('http');
 const env = require('./config/env');
-const { connectDatabase, disconnectDatabase } = require('./config/db');
+const { initializeDatabase, disconnectDatabase } = require('./config/db');
 const { seedDatabase } = require('./config/seed');
 const app = require('./app');
 
 let server = null;
 
 async function startServer() {
-  try {
-    await connectDatabase();
-    await seedDatabase();
+  // Bind the HTTP port immediately so Cloud Run / container startup probes pass without delay
+  server = http.createServer(app);
+  server.listen(env.port, '0.0.0.0', () => {
+    console.log(
+      `[server] Kalaakriti Studios Backend running on http://0.0.0.0:${env.port} (${env.nodeEnv})`
+    );
+  });
 
-    server = http.createServer(app);
-    server.listen(env.port, '0.0.0.0', () => {
-      console.log(
-        `[server] Kalaakriti Studios Backend running on http://0.0.0.0:${env.port} (${env.nodeEnv})`
-      );
-    });
-  } catch (err) {
-    console.error('[server] Fatal startup error:', err);
-    process.exit(1);
-  }
+  // Connect and seed MongoDB in the background (API data routes await readiness automatically)
+  initializeDatabase(seedDatabase).catch((err) => {
+    console.error('[server] Initial database connection error (will retry on API request):', err);
+  });
 }
 
 async function shutdown(signal) {

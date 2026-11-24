@@ -52,6 +52,24 @@ export interface MonthlyChartDatum {
   count: number;
 }
 
+export interface DailyTrendDatum {
+  date: string;
+  label: string;
+  bookings: number;
+  inquiries: number;
+  total: number;
+}
+
+export interface TrendsSummary {
+  totalBookings: number;
+  totalInquiries: number;
+  bookingsChangePct: number | null;
+  inquiriesChangePct: number | null;
+  peakDayLabel: string | null;
+  peakDayTotal: number;
+  dailyAverage: number;
+}
+
 export interface DistributionChartDatum {
   name: string;
   value: number;
