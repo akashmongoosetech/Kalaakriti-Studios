@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Play } from 'lucide-react';
 import { GalleryItem } from '../../types';
-import { SafeImage } from '../common/SafeImage';
+import { GalleryMediaPreview } from '../gallery/GalleryMediaPreview';
 
 interface HorizontalStoryStripProps {
   items: GalleryItem[];
@@ -71,36 +71,45 @@ export function HorizontalStoryStrip({ items, onSelectItem }: HorizontalStoryStr
               }}
               className="relative aspect-[16/11] overflow-hidden rounded-xl bg-[#242220] border border-[#C5A46D]/20 cursor-pointer"
             >
-              <SafeImage
-                src={item.thumbnail}
-                alt={item.title}
+              <GalleryMediaPreview
+                mediaType={item.mediaType || item.type || 'image'}
+                mediaUrl={item.mediaUrl || item.videoUrl || item.src}
+                embedUrl={item.embedUrl}
+                thumbnail={item.thumbnail}
+                videoProvider={item.videoProvider}
+                title={item.title}
+                mode="thumbnail"
                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#171615]/85 via-transparent to-transparent" />
-              {item.type === 'video' && (
-                <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute inset-0 bg-gradient-to-t from-[#171615]/85 via-transparent to-transparent pointer-events-none" />
+              {(item.mediaType || item.type) === 'video' && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#57252F]/90 border border-[#C5A46D] text-[#F7F2E9] shadow-xl transition-transform duration-300 group-hover:scale-110">
                     <Play className="w-5 h-5 fill-current ml-0.5" aria-hidden="true" />
                   </span>
                 </div>
               )}
-              <div className="absolute bottom-4 left-5 right-5 flex items-center justify-between text-xs text-[#E8DCCB]">
+              <div className="absolute bottom-4 left-5 right-5 flex items-center justify-between text-xs text-[#E8DCCB] pointer-events-none">
                 <span>
-                  {String(idx + 1).padStart(2, '0')} · {item.category}
-                  {item.type === 'video' && item.duration ? ` · Film ${item.duration}` : ''}
+                  {String(idx + 1).padStart(2, '0')} · {item.category || 'General'}
+                  {(item.mediaType || item.type) === 'video' && item.duration
+                    ? ` · Film ${item.duration}`
+                    : ''}
                 </span>
-                <span>{item.location}</span>
+                {item.location && <span>{item.location}</span>}
               </div>
             </div>
 
             <div className="mt-4 flex items-start justify-between gap-4">
               <div>
                 <h3 className="font-editorial text-2xl text-[#F7F2E9] font-medium">
-                  <Link to={`/gallery/${item.slug}`} className="hover:text-[#C5A46D] transition-colors">
+                  <Link to={`/gallery/${item.slug || item.id}`} className="hover:text-[#C5A46D] transition-colors">
                     {item.title}
                   </Link>
                 </h3>
-                <p className="mt-1.5 text-sm text-[#E8DCCB]/75 line-clamp-2">{item.description}</p>
+                {item.description && (
+                  <p className="mt-1.5 text-sm text-[#E8DCCB]/75 line-clamp-2">{item.description}</p>
+                )}
               </div>
               <Link
                 to={`/gallery/${item.slug}`}

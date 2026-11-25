@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { GalleryItem } from '../../types';
 import { SafeImage } from '../common/SafeImage';
+import { GalleryMediaPreview } from './GalleryMediaPreview';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useSmoothScroll } from '../../context/SmoothScrollContext';
 
@@ -133,16 +134,23 @@ export function GalleryLightbox({
         handleNext();
       } else if (e.key === 'ArrowLeft') {
         handlePrev();
-      } else if (e.key === ' ' && item?.type === 'video' && !item.videoUrl) {
+      } else if (
+        e.key === ' ' &&
+        item &&
+        (item.mediaType || item.type) === 'video' &&
+        !item.embedUrl &&
+        !item.videoUrl &&
+        item.videoProvider === 'reel'
+      ) {
         e.preventDefault();
         setIsPlaying((p) => !p);
-      } else if ((e.key === '+' || e.key === '=') && item?.type === 'image') {
+      } else if ((e.key === '+' || e.key === '=') && (item?.mediaType || item?.type) === 'image') {
         e.preventDefault();
         handleZoomIn();
-      } else if (e.key === '-' && item?.type === 'image') {
+      } else if (e.key === '-' && (item?.mediaType || item?.type) === 'image') {
         e.preventDefault();
         handleZoomOut();
-      } else if (e.key === '0' && item?.type === 'image') {
+      } else if (e.key === '0' && (item?.mediaType || item?.type) === 'image') {
         e.preventDefault();
         resetZoom();
       }
@@ -154,9 +162,15 @@ export function GalleryLightbox({
     };
   }, [currentIndex, item, onClose, handleNext, handlePrev, handleZoomIn, handleZoomOut, resetZoom]);
 
-  // Interactive Cinema Reel timeline advancement for bundled showcase films
+  // Interactive Cinema Reel timeline advancement for legacy reel showcase films
   useEffect(() => {
-    if (!item || item.type !== 'video' || item.videoUrl || !isPlaying) return;
+    const isLegacyReel =
+      item &&
+      (item.mediaType || item.type) === 'video' &&
+      !item.embedUrl &&
+      !item.videoUrl &&
+      Boolean(item.reelFrames && item.reelFrames.length > 0);
+    if (!isLegacyReel || !isPlaying) return;
     const id = window.setInterval(() => {
       setReelProgress((prev) => (prev >= 100 ? 0 : prev + 0.65));
     }, 100);
@@ -369,19 +383,25 @@ export function GalleryLightbox({
               transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
               className="relative w-full max-w-6xl max-h-full flex items-center justify-center"
             >
-              {item.type === 'video' ? (
-                item.videoUrl ? (
-                  <video
-                    key={item.id}
-                    src={item.videoUrl}
-                    poster={item.thumbnail}
-                    controls
-                    autoPlay
-                    playsInline
-                    className="max-h-[65vh] w-full rounded-xl bg-black border border-[#C5A46D]/25 object-contain"
-                  />
+              {(item.mediaType || item.type) === 'video' ? (
+                item.embedUrl ||
+                item.videoUrl ||
+                (item.videoProvider && item.videoProvider !== 'reel') ||
+                !(item.reelFrames && item.reelFrames.length > 0) ? (
+                  <div className="relative w-full aspect-video max-h-[65vh] overflow-hidden rounded-xl bg-black border border-[#C5A46D]/30 shadow-2xl">
+                    <GalleryMediaPreview
+                      mediaType="video"
+                      mediaUrl={item.mediaUrl || item.videoUrl || item.src}
+                      embedUrl={item.embedUrl}
+                      thumbnail={item.thumbnail}
+                      videoProvider={item.videoProvider}
+                      title={item.title}
+                      mode="player"
+                      className="h-full w-full"
+                    />
+                  </div>
                 ) : (
-                  /* Interactive Cinema Reel Player for bundled showcase films */
+                  /* Interactive Cinema Reel Player for legacy showcase reels */
                   <div className="relative w-full aspect-video max-h-[65vh] overflow-hidden rounded-xl bg-black border border-[#C5A46D]/35 shadow-2xl">
                     {frames.map((frameSrc, idx) => (
                       <SafeImage
@@ -477,7 +497,7 @@ export function GalleryLightbox({
                     className="transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform"
                   >
                     <SafeImage
-                      src={item.src}
+                      src={item.mediaUrl || item.src}
                       alt={item.title}
                       loading="eager"
                       className="max-h-[65vh] max-w-full w-auto object-contain pointer-events-none"
@@ -521,9 +541,14 @@ export function GalleryLightbox({
                           : 'border-[#F7F2E9]/15 opacity-55 hover:opacity-90'
                       }`}
                     >
-                      <SafeImage
-                        src={entry.thumbnail}
-                        alt={entry.title}
+                      <GalleryMediaPreview
+                        mediaType={entry.mediaType || entry.type || 'image'}
+                        mediaUrl={entry.mediaUrl || entry.videoUrl || entry.src}
+                        embedUrl={entry.embedUrl}
+                        thumbnail={entry.thumbnail}
+                        videoProvider={entry.videoProvider}
+                        title={entry.title}
+                        mode="thumbnail"
                         className="h-full w-full object-cover"
                       />
                     </button>
@@ -534,14 +559,18 @@ export function GalleryLightbox({
 
             <div className="studio-container flex flex-col md:flex-row md:items-center justify-between gap-2.5">
               <p className="text-xs sm:text-sm text-[#E8DCCB]/85 max-w-2xl leading-relaxed line-clamp-2">
-                {item.description}
+                {item.description || item.title}
               </p>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#C5A46D] shrink-0">
-                <span>{item.coupleOrClient}</span>
-                <span aria-hidden="true" className="opacity-40">
-                  ·
-                </span>
-                <span>{item.location}</span>
+                <span>{item.coupleOrClient || item.category || 'Kalaakriti Studios'}</span>
+                {item.location && (
+                  <>
+                    <span aria-hidden="true" className="opacity-40">
+                      ·
+                    </span>
+                    <span>{item.location}</span>
+                  </>
+                )}
                 {item.cameraSpec && (
                   <>
                     <span aria-hidden="true" className="opacity-40">

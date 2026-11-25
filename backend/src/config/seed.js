@@ -15,8 +15,42 @@ async function seedDatabase() {
   ]);
 
   if (galleryCount === 0) {
-    await GalleryItem.insertMany(SEED_GALLERY_ITEMS);
-    console.log(`[seed] Seeded ${SEED_GALLERY_ITEMS.length} gallery items.`);
+    const normalizedSeedItems = SEED_GALLERY_ITEMS.map((item) => ({
+      ...item,
+      mediaType: item.type || 'image',
+      mediaUrl: item.videoUrl || item.src || item.thumbnail,
+      videoProvider: item.type === 'video' ? (item.videoUrl ? 'direct' : 'reel') : '',
+      displayOrder: typeof item.sortOrder === 'number' ? item.sortOrder : 0,
+      status: item.isPublished === false ? 'inactive' : 'active',
+    }));
+    await GalleryItem.insertMany(normalizedSeedItems);
+    console.log(`[seed] Seeded ${normalizedSeedItems.length} gallery items.`);
+  } else {
+    // Migrate any pre-existing gallery documents missing canonical Gallery Management fields
+    const legacyItems = await GalleryItem.find({
+      $or: [
+        { mediaType: { $exists: false } },
+        { mediaUrl: { $exists: false } },
+        { status: { $exists: false } },
+        { displayOrder: { $exists: false } },
+      ],
+    });
+    if (legacyItems.length > 0) {
+      await Promise.all(
+        legacyItems.map((doc) => {
+          doc.mediaType = doc.mediaType || doc.type || 'image';
+          doc.mediaUrl = doc.mediaUrl || doc.videoUrl || doc.src || doc.thumbnail || '';
+          doc.videoProvider =
+            doc.videoProvider ||
+            (doc.mediaType === 'video' ? (doc.videoUrl ? 'direct' : 'reel') : '');
+          doc.displayOrder =
+            typeof doc.displayOrder === 'number' ? doc.displayOrder : Number(doc.sortOrder || 0);
+          doc.status = doc.status || (doc.isPublished === false ? 'inactive' : 'active');
+          return doc.save();
+        })
+      );
+      console.log(`[seed] Backfilled canonical gallery fields on ${legacyItems.length} existing items.`);
+    }
   }
 
   if (testimonialCount === 0) {

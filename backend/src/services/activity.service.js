@@ -37,7 +37,10 @@ async function listActivity({ page = 1, limit = 20, entityType = '' } = {}) {
   const skip = (parsedPage - 1) * parsedLimit;
 
   const filter = {};
-  if (entityType && ['contact', 'booking', 'profile', 'newsletter'].includes(String(entityType))) {
+  if (
+    entityType &&
+    ['contact', 'booking', 'profile', 'newsletter', 'gallery'].includes(String(entityType))
+  ) {
     filter.entityType = String(entityType);
   }
 

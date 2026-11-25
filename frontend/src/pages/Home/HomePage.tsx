@@ -6,7 +6,6 @@ import { ArrowDown, ArrowRight, ArrowUpRight, MapPin } from 'lucide-react';
 import { STUDIO_CONFIG } from '../../data/studio';
 import { STUDIO_IMAGES } from '../../data/media';
 import { PHOTOGRAPHY_CATEGORIES } from '../../data/categories';
-import { GALLERY_ITEMS } from '../../data/gallery';
 import { STUDIO_SERVICES } from '../../data/services';
 import { CITIES_WE_SERVE } from '../../data/cities';
 import { SeoHelmet } from '../../components/common/SeoHelmet';
@@ -141,24 +140,33 @@ export default function HomePage() {
   const heroTextRef = useRef<HTMLDivElement>(null);
   const prefersReduced = useReducedMotion();
 
-  const [portfolioItems, setPortfolioItems] = useState<GalleryItem[]>(GALLERY_ITEMS);
-  const [lightboxItems, setLightboxItems] = useState<GalleryItem[]>(GALLERY_ITEMS);
+  const [portfolioItems, setPortfolioItems] = useState<GalleryItem[]>([]);
+  const [portfolioLoading, setPortfolioLoading] = useState(true);
+  const [lightboxItems, setLightboxItems] = useState<GalleryItem[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    let active = true;
+    const controller = new AbortController();
+    setPortfolioLoading(true);
     publicApi
-      .getGallery({ limit: 12 })
+      .getGallery({ limit: 12 }, controller.signal)
       .then((items) => {
-        if (active && items.length > 0) {
+        if (!controller.signal.aborted) {
           setPortfolioItems(items);
         }
       })
       .catch(() => {
-        // Keep bundled gallery items as seamless fallback
+        if (!controller.signal.aborted) {
+          setPortfolioItems([]);
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setPortfolioLoading(false);
+        }
       });
     return () => {
-      active = false;
+      controller.abort();
     };
   }, []);
 
@@ -473,15 +481,33 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="columns-1 sm:columns-2 lg:columns-3 2xl:columns-4 gap-6">
-            {featuredPortfolio.map((item) => (
-              <GalleryCard
-                key={item.id}
-                item={item}
-                onOpenLightbox={(selected) => openLightboxWithList(featuredPortfolio, selected)}
-              />
-            ))}
-          </div>
+          {portfolioLoading ? (
+            <div className="columns-1 sm:columns-2 lg:columns-3 2xl:columns-4 gap-6">
+              {['aspect-[4/3]', 'aspect-[3/4]', 'aspect-[16/10]', 'aspect-[4/3]'].map((aspect, idx) => (
+                <div
+                  key={idx}
+                  className={`break-inside-avoid mb-6 ${aspect} rounded-xl bg-[#E8DCCB]/75 animate-pulse`}
+                />
+              ))}
+            </div>
+          ) : featuredPortfolio.length > 0 ? (
+            <div className="columns-1 sm:columns-2 lg:columns-3 2xl:columns-4 gap-6">
+              {featuredPortfolio.map((item) => (
+                <GalleryCard
+                  key={item.id}
+                  item={item}
+                  onOpenLightbox={(selected) => openLightboxWithList(featuredPortfolio, selected)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-xl bg-[#FFFFFF] border border-[#171615]/10 py-14 px-6 text-center max-w-lg mx-auto">
+              <p className="font-editorial text-2xl text-[#171615]">Portfolio Updates Coming Soon</p>
+              <p className="mt-2 text-sm text-[#5C554E]">
+                Our latest photographs and wedding films will appear here as soon as they are published.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

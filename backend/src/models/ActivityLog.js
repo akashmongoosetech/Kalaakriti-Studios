@@ -8,6 +8,10 @@ const ACTIVITY_TYPES = [
   'booking_updated',
   'booking_deleted',
   'status_changed',
+  'gallery_created',
+  'gallery_updated',
+  'gallery_deleted',
+  'gallery_status_changed',
 ];
 
 const activityLogSchema = new mongoose.Schema(
@@ -31,7 +35,7 @@ const activityLogSchema = new mongoose.Schema(
     },
     entityType: {
       type: String,
-      enum: ['contact', 'booking', 'profile'],
+      enum: ['contact', 'booking', 'profile', 'gallery'],
       required: true,
     },
     entityId: {

@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Film, Image as ImageIcon, Search, X } from 'lucide-react';
-import { GALLERY_FILTER_CATEGORIES, GALLERY_ITEMS } from '../../data/gallery';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { AlertCircle, Film, Image as ImageIcon, Images, RefreshCw, Search, X } from 'lucide-react';
 import { STUDIO_CONFIG } from '../../data/studio';
 import { STUDIO_IMAGES } from '../../data/media';
 import { SeoHelmet } from '../../components/common/SeoHelmet';
@@ -14,40 +13,73 @@ import { GalleryItem } from '../../types';
 const PAGE_SIZE = 9;
 
 export default function GalleryPage() {
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(GALLERY_ITEMS);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [mediaFilter, setMediaFilter] = useState<'all' | 'image' | 'video'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
+  const loadGallery = useCallback(async (signal?: AbortSignal) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const items = await publicApi.getGallery(undefined, signal);
+      if (signal?.aborted) return;
+      setGalleryItems(items);
+    } catch (err) {
+      if (signal?.aborted) return;
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Unable to load the gallery right now. Please try again.'
+      );
+    } finally {
+      if (!signal?.aborted) {
+        setLoading(false);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const controller = new AbortController();
-    publicApi
-      .getGallery(undefined, controller.signal)
-      .then((items) => {
-        if (items.length > 0) {
-          setGalleryItems(items);
-        }
-      })
-      .catch(() => {
-        // Keep seeded fallback if offline
-      });
+    loadGallery(controller.signal);
     return () => controller.abort();
-  }, []);
+  }, [loadGallery]);
+
+  // Dynamically derive available categories from active database items
+  const availableCategories = useMemo(() => {
+    const set = new Set<string>();
+    for (const item of galleryItems) {
+      if (item.category && item.category.trim()) {
+        set.add(item.category.trim());
+      }
+    }
+    return ['All', ...Array.from(set).sort((a, b) => a.localeCompare(b))];
+  }, [galleryItems]);
+
+  // Reset category filter if a category no longer exists in active items
+  useEffect(() => {
+    if (selectedCategory !== 'All' && !availableCategories.includes(selectedCategory)) {
+      setSelectedCategory('All');
+    }
+  }, [availableCategories, selectedCategory]);
 
   const filteredItems = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return galleryItems.filter((item) => {
+      const itemType = item.mediaType || item.type || 'image';
       const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
-      const matchesType = mediaFilter === 'all' || item.type === mediaFilter;
+      const matchesType = mediaFilter === 'all' || itemType === mediaFilter;
       const matchesSearch =
         !q ||
         item.title.toLowerCase().includes(q) ||
-        item.category.toLowerCase().includes(q) ||
-        item.location.toLowerCase().includes(q) ||
-        item.description.toLowerCase().includes(q) ||
-        item.coupleOrClient.toLowerCase().includes(q);
+        (item.category || '').toLowerCase().includes(q) ||
+        (item.location || '').toLowerCase().includes(q) ||
+        (item.description || '').toLowerCase().includes(q) ||
+        (item.coupleOrClient || '').toLowerCase().includes(q);
       return matchesCategory && matchesType && matchesSearch;
     });
   }, [galleryItems, selectedCategory, mediaFilter, searchQuery]);
@@ -66,6 +98,9 @@ export default function GalleryPage() {
     setSearchQuery('');
     setVisibleCount(PAGE_SIZE);
   };
+
+  const hasActiveFilters =
+    selectedCategory !== 'All' || mediaFilter !== 'all' || Boolean(searchQuery.trim());
 
   const dynamicGalleryTitle =
     selectedCategory === 'All'
@@ -91,6 +126,7 @@ export default function GalleryPage() {
           { name: 'Gallery', path: '/gallery' },
         ]}
       />
+
       {/* Gallery Hero */}
       <section className="relative min-h-[56vh] flex items-end pb-14 pt-32 bg-[#171615] text-[#F7F2E9] overflow-hidden">
         <SafeImage
@@ -109,7 +145,7 @@ export default function GalleryPage() {
           </h1>
           <p className="mt-4 text-base sm:text-lg text-[#E8DCCB]/85 leading-relaxed max-w-2xl">
             Experience both still photography and highlight films within a single curated gallery.
-            Click any card to enter fullscreen viewing with keyboard navigation and video controls.
+            Click any card to enter fullscreen viewing with keyboard navigation and live video playback.
           </p>
         </div>
       </section>
@@ -125,7 +161,7 @@ export default function GalleryPage() {
                 aria-hidden="true"
               />
               <label htmlFor="gallery-search-input" className="sr-only">
-                Search gallery by ritual, city, or story
+                Search gallery by title, ceremony, or story
               </label>
               <input
                 id="gallery-search-input"
@@ -135,7 +171,7 @@ export default function GalleryPage() {
                   setSearchQuery(e.target.value);
                   setVisibleCount(PAGE_SIZE);
                 }}
-                placeholder="Search by ceremony, Indore, Maheshwar, Haldi..."
+                placeholder="Search by title, ceremony, or location..."
                 className="w-full rounded-lg bg-[#FFFFFF] border border-[#171615]/15 pl-11 pr-10 py-2.5 text-sm text-[#171615] placeholder:text-[#5C554E]/65 focus:border-[#57252F] focus:outline-none"
               />
               {searchQuery && (
@@ -158,7 +194,10 @@ export default function GalleryPage() {
               >
                 <button
                   type="button"
-                  onClick={() => setMediaFilter('all')}
+                  onClick={() => {
+                    setMediaFilter('all');
+                    setVisibleCount(PAGE_SIZE);
+                  }}
                   className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer whitespace-nowrap ${
                     mediaFilter === 'all'
                       ? 'bg-[#57252F] text-[#F7F2E9]'
@@ -169,7 +208,10 @@ export default function GalleryPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setMediaFilter('image')}
+                  onClick={() => {
+                    setMediaFilter('image');
+                    setVisibleCount(PAGE_SIZE);
+                  }}
                   className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer whitespace-nowrap ${
                     mediaFilter === 'image'
                       ? 'bg-[#57252F] text-[#F7F2E9]'
@@ -181,7 +223,10 @@ export default function GalleryPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setMediaFilter('video')}
+                  onClick={() => {
+                    setMediaFilter('video');
+                    setVisibleCount(PAGE_SIZE);
+                  }}
                   className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer whitespace-nowrap ${
                     mediaFilter === 'video'
                       ? 'bg-[#57252F] text-[#F7F2E9]'
@@ -189,48 +234,92 @@ export default function GalleryPage() {
                   }`}
                 >
                   <Film className="w-3.5 h-3.5" aria-hidden="true" />
-                  <span>Cinema Films</span>
+                  <span>Videos</span>
                 </button>
               </div>
 
               <span className="text-xs text-[#5C554E] tabular-nums">
-                {filteredItems.length} {filteredItems.length === 1 ? 'work' : 'works'}
+                {loading
+                  ? 'Loading...'
+                  : `${filteredItems.length} ${filteredItems.length === 1 ? 'work' : 'works'}`}
               </span>
             </div>
           </div>
 
-          {/* Category Filter Tabs */}
-          <div
-            role="tablist"
-            aria-label="Filter gallery by category"
-            className="flex items-center gap-2 overflow-x-auto pb-2"
-          >
-            {GALLERY_FILTER_CATEGORIES.map((cat) => {
-              const active = selectedCategory === cat;
-              return (
-                <button
-                  key={cat}
-                  type="button"
-                  role="tab"
-                  aria-selected={active}
-                  onClick={() => {
-                    setSelectedCategory(cat);
-                    setVisibleCount(PAGE_SIZE);
-                  }}
-                  className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer border ${
-                    active
-                      ? 'bg-[#171615] text-[#F7F2E9] border-[#171615]'
-                      : 'bg-transparent text-[#171615]/80 border-[#171615]/15 hover:border-[#57252F] hover:text-[#57252F]'
-                  }`}
-                >
-                  {cat}
-                </button>
-              );
-            })}
-          </div>
+          {/* Dynamic Category Filter Tabs (only shown when categories exist) */}
+          {!loading && availableCategories.length > 1 && (
+            <div
+              role="tablist"
+              aria-label="Filter gallery by category"
+              className="flex items-center gap-2 overflow-x-auto pb-2"
+            >
+              {availableCategories.map((cat) => {
+                const active = selectedCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => {
+                      setSelectedCategory(cat);
+                      setVisibleCount(PAGE_SIZE);
+                    }}
+                    className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer border ${
+                      active
+                        ? 'bg-[#171615] text-[#F7F2E9] border-[#171615]'
+                        : 'bg-transparent text-[#171615]/80 border-[#171615]/15 hover:border-[#57252F] hover:text-[#57252F]'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
-          {/* Mixed Image & Video Masonry Grid (scales up to 4 columns on 4K displays) */}
-          {visibleItems.length > 0 ? (
+          {/* Error Banner */}
+          {error && (
+            <div className="rounded-xl bg-[#FFFFFF] border border-[#FECACA] px-6 py-8 text-center max-w-xl mx-auto space-y-3">
+              <AlertCircle className="w-7 h-7 text-[#B91C1C] mx-auto" aria-hidden="true" />
+              <h2 className="font-editorial text-2xl font-medium text-[#171615]">
+                Unable to Load Portfolio
+              </h2>
+              <p className="text-sm text-[#5C554E]">{error}</p>
+              <button
+                type="button"
+                onClick={() => loadGallery()}
+                className="inline-flex items-center gap-2 rounded-lg bg-[#57252F] px-5 py-2.5 text-sm font-medium text-[#F7F2E9] hover:bg-[#3E1820] transition-colors cursor-pointer"
+              >
+                <RefreshCw className="w-4 h-4" aria-hidden="true" />
+                <span>Try Again</span>
+              </button>
+            </div>
+          )}
+
+          {/* Loading Skeletons */}
+          {loading ? (
+            <div
+              aria-label="Loading gallery items"
+              className="columns-1 sm:columns-2 lg:columns-3 2xl:columns-4 gap-6"
+            >
+              {[
+                'aspect-[4/3]',
+                'aspect-[3/4]',
+                'aspect-[16/10]',
+                'aspect-[3/4]',
+                'aspect-[4/3]',
+                'aspect-[4/3]',
+              ].map((aspect, idx) => (
+                <div key={idx} className="break-inside-avoid mb-6 space-y-2.5">
+                  <div
+                    className={`${aspect} w-full rounded-xl bg-[#E8DCCB]/75 animate-pulse border border-[#171615]/8`}
+                  />
+                  <div className="h-3.5 w-2/3 rounded bg-[#E8DCCB]/75 animate-pulse" />
+                </div>
+              ))}
+            </div>
+          ) : !error && visibleItems.length > 0 ? (
             <>
               <div className="columns-1 sm:columns-2 lg:columns-3 2xl:columns-4 gap-6">
                 {visibleItems.map((item) => (
@@ -256,23 +345,32 @@ export default function GalleryPage() {
                 </div>
               )}
             </>
-          ) : (
-            <div className="rounded-xl bg-[#FFFFFF] border border-[#171615]/10 py-16 px-6 text-center max-w-xl mx-auto">
+          ) : !error ? (
+            <div className="rounded-xl bg-[#FFFFFF] border border-[#171615]/10 py-16 px-6 text-center max-w-xl mx-auto space-y-3">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#F7F2E9] text-[#57252F]">
+                <Images className="w-6 h-6" aria-hidden="true" />
+              </div>
               <h2 className="font-editorial text-2xl font-medium text-[#171615]">
-                No matching works found
+                {hasActiveFilters
+                  ? 'No matching works found'
+                  : 'Gallery Collection Coming Soon'}
               </h2>
-              <p className="mt-2 text-sm text-[#5C554E]">
-                Try clearing your search term or selecting another celebration category.
+              <p className="text-sm text-[#5C554E]">
+                {hasActiveFilters
+                  ? 'Try clearing your search term or selecting another celebration category.'
+                  : 'No active photographs or films are currently published in the gallery. Check back soon for new curated works.'}
               </p>
-              <button
-                type="button"
-                onClick={resetFilters}
-                className="mt-6 rounded-lg bg-[#57252F] px-5 py-2.5 text-sm font-medium text-[#F7F2E9] hover:bg-[#3E1820] transition-colors cursor-pointer"
-              >
-                Reset Gallery Filters
-              </button>
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="mt-3 rounded-lg bg-[#57252F] px-5 py-2.5 text-sm font-medium text-[#F7F2E9] hover:bg-[#3E1820] transition-colors cursor-pointer"
+                >
+                  Reset Gallery Filters
+                </button>
+              )}
             </div>
-          )}
+          ) : null}
         </div>
       </section>
 

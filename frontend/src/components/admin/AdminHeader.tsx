@@ -6,6 +6,7 @@ import {
   CalendarCheck2,
   ChevronDown,
   ChevronRight,
+  Images,
   LogOut,
   Menu,
   MessageSquareText,
@@ -25,6 +26,7 @@ const ROUTE_META: Record<string, { title: string; breadcrumb: string }> = {
   '/admin/dashboard': { title: 'Dashboard Overview', breadcrumb: 'Overview' },
   '/admin/contacts': { title: 'Contacts Management', breadcrumb: 'Contacts' },
   '/admin/bookings': { title: 'Bookings Management', breadcrumb: 'Bookings' },
+  '/admin/gallery': { title: 'Gallery Management', breadcrumb: 'Gallery' },
   '/admin/profile': { title: 'Administrator Profile', breadcrumb: 'Profile' },
 };
 
@@ -67,7 +69,8 @@ export function AdminHeader({ onRequestLogout }: AdminHeaderProps) {
     if (!globalSearch.trim()) return;
     if (
       location.pathname !== '/admin/contacts' &&
-      location.pathname !== '/admin/bookings'
+      location.pathname !== '/admin/bookings' &&
+      location.pathname !== '/admin/gallery'
     ) {
       navigate('/admin/bookings');
     }
@@ -183,13 +186,17 @@ export function AdminHeader({ onRequestLogout }: AdminHeaderProps) {
                         ? '/admin/bookings'
                         : item.entityType === 'contact'
                           ? '/admin/contacts'
-                          : '/admin/profile';
+                          : item.entityType === 'gallery'
+                            ? '/admin/gallery'
+                            : '/admin/profile';
                     const Icon =
                       item.entityType === 'booking'
                         ? CalendarCheck2
                         : item.entityType === 'contact'
                           ? MessageSquareText
-                          : UserCircle2;
+                          : item.entityType === 'gallery'
+                            ? Images
+                            : UserCircle2;
                     let relTime = '';
                     try {
                       relTime = formatDistanceToNow(parseISO(item.timestamp), { addSuffix: true });

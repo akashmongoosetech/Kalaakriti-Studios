@@ -30,8 +30,8 @@ export function AdminLayout() {
         </main>
 
         <footer className="border-t border-[#171615]/8 bg-[#F7F2E9] px-4 sm:px-6 lg:px-8 py-4 text-[11px] text-[#5C554E] flex flex-col sm:flex-row items-center justify-between gap-2 print:hidden">
-          <span>Kalaakriti Studios · Admin CRM Workspace (Frontend Demonstration)</span>
-          <span>Data persisted locally in browser storage · Backend API ready</span>
+          <span>Kalaakriti Studios · Admin Workspace</span>
+          <span>Live portfolio, bookings &amp; inquiries synced with database</span>
         </footer>
       </div>
 
@@ -40,7 +40,7 @@ export function AdminLayout() {
         onClose={() => setLogoutDialogOpen(false)}
         onConfirm={handleConfirmLogout}
         title="Confirm Sign Out"
-        description="Are you sure you want to sign out of the Kalaakriti Studios Admin Panel? Your saved inquiries and bookings will remain stored locally."
+        description="Are you sure you want to sign out of the Kalaakriti Studios Admin Panel?"
         entityLabel={user ? `${user.firstName} ${user.lastName} (@${user.username})` : undefined}
         confirmText="Log Out"
         cancelText="Stay Signed In"

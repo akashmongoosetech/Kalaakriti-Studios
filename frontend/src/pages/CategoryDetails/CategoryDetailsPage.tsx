@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Check, ChevronDown, Maximize2 } from 'lucide-react';
 import { getCategoryBySlug, PHOTOGRAPHY_CATEGORIES } from '../../data/categories';
-import { getGalleryItemsByCategorySlug } from '../../data/gallery';
 import { STUDIO_SERVICES } from '../../data/services';
 import { STUDIO_CONFIG } from '../../data/studio';
 import { SeoHelmet } from '../../components/common/SeoHelmet';
@@ -11,21 +10,39 @@ import { SectionHeading } from '../../components/common/SectionHeading';
 import { GalleryCard } from '../../components/gallery/GalleryCard';
 import { GalleryLightbox } from '../../components/gallery/GalleryLightbox';
 import NotFoundPage from '../NotFound/NotFoundPage';
+import { publicApi } from '../../services/api/public.api';
 import { GalleryItem } from '../../types';
 
 export default function CategoryDetailsPage() {
   const { categorySlug } = useParams<{ categorySlug: string }>();
   const category = categorySlug ? getCategoryBySlug(categorySlug) : undefined;
 
+  const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
   const [lightboxItems, setLightboxItems] = useState<GalleryItem[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
+  useEffect(() => {
+    if (!categorySlug) return;
+    const controller = new AbortController();
+    publicApi
+      .getGallery({ categorySlug, limit: 8 }, controller.signal)
+      .then((items) => {
+        if (!controller.signal.aborted) {
+          setGalleryList(items);
+        }
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          setGalleryList([]);
+        }
+      });
+    return () => controller.abort();
+  }, [categorySlug]);
+
   if (!category) {
     return <NotFoundPage />;
   }
-
-  const galleryList = getGalleryItemsByCategorySlug(category.slug);
   const featuredLightboxItems: GalleryItem[] = category.featuredImages.map((img, i) => ({
     id: `${category.slug}-featured-${i}`,
     slug: galleryList[0]?.slug || 'royal-indore-palace-wedding',

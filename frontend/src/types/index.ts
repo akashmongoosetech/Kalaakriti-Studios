@@ -1,15 +1,21 @@
 export type MediaType = 'image' | 'video';
+export type GalleryStatus = 'active' | 'inactive';
+export type VideoProvider = '' | 'youtube' | 'youtube_shorts' | 'vimeo' | 'direct' | 'reel';
 
 export interface GalleryItem {
   id: string;
   slug: string;
   type: MediaType;
+  mediaType?: MediaType;
   title: string;
   category: string;
   categorySlug: string;
   thumbnail: string;
   src: string;
-  /** Optional real MP4 URL when deployed with studio video files; falls back to interactive Cinema Reel player */
+  mediaUrl?: string;
+  embedUrl?: string;
+  videoProvider?: VideoProvider;
+  /** Optional real MP4/WebM URL for direct HTML5 playback */
   videoUrl?: string;
   reelFrames?: string[];
   duration?: string;
@@ -21,6 +27,40 @@ export interface GalleryItem {
   isDemoContent?: boolean;
   cameraSpec?: string;
   storyHighlights?: string[];
+  displayOrder?: number;
+  status?: GalleryStatus;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface GalleryMutationInput {
+  title: string;
+  description?: string;
+  mediaType: MediaType;
+  mediaUrl: string;
+  category?: string;
+  displayOrder?: number;
+  status: GalleryStatus;
+}
+
+export interface AdminGalleryStats {
+  total: number;
+  active: number;
+  inactive: number;
+  images: number;
+  videos: number;
+}
+
+export interface AdminGalleryListResponse {
+  items: GalleryItem[];
+  stats: AdminGalleryStats;
+  categories: string[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 export interface CategoryPackage {

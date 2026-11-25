@@ -35,14 +35,18 @@ export type ActivityType =
   | 'booking_submitted'
   | 'booking_updated'
   | 'booking_deleted'
-  | 'status_changed';
+  | 'status_changed'
+  | 'gallery_created'
+  | 'gallery_updated'
+  | 'gallery_deleted'
+  | 'gallery_status_changed';
 
 export interface ActivityLogItem {
   id: string;
   type: ActivityType;
   title: string;
   description: string;
-  entityType: 'contact' | 'booking' | 'profile';
+  entityType: 'contact' | 'booking' | 'profile' | 'gallery';
   entityId: string;
   timestamp: string;
 }

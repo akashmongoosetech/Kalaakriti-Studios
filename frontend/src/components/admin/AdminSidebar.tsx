@@ -4,6 +4,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
+  Images,
   LayoutDashboard,
   LogOut,
   MessageSquareText,
@@ -46,6 +47,12 @@ export function AdminSidebar({ onRequestLogout }: AdminSidebarProps) {
       label: 'Bookings',
       icon: CalendarCheck2,
       badge: kpi.pendingBookings,
+    },
+    {
+      to: '/admin/gallery',
+      label: 'Gallery',
+      icon: Images,
+      badge: 0,
     },
     {
       to: '/admin/profile',

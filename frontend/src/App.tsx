@@ -40,6 +40,7 @@ const AdminForgotPasswordPage = lazy(() => import('./pages/admin/ForgotPassword'
 const AdminDashboardPage = lazy(() => import('./pages/admin/Dashboard'));
 const AdminContactsPage = lazy(() => import('./pages/admin/Contacts'));
 const AdminBookingsPage = lazy(() => import('./pages/admin/Bookings'));
+const AdminGalleryPage = lazy(() => import('./pages/admin/Gallery'));
 const AdminProfilePage = lazy(() => import('./pages/admin/Profile'));
 
 function PageLoader({ label = 'Loading Gallery...' }: { label?: string }) {
@@ -163,6 +164,14 @@ function RootRouter() {
           element={
             <Suspense fallback={<PageLoader label="Loading Bookings..." />}>
               <AdminBookingsPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="gallery"
+          element={
+            <Suspense fallback={<PageLoader label="Loading Gallery Management..." />}>
+              <AdminGalleryPage />
             </Suspense>
           }
         />
