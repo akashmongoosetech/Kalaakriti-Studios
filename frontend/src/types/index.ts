@@ -133,11 +133,19 @@ export interface CityCoverage {
   recommendedCategory: string;
 }
 
+export type FAQCategory =
+  | 'Booking & Policies'
+  | 'Delivery & Editing'
+  | 'Prints & Albums'
+  | 'Coverage & Travel';
+
 export interface FAQItem {
   id: string;
   topic: string;
+  category?: FAQCategory;
   question: string;
   answer: string;
+  highlights?: string[];
 }
 
 export interface DemoBookingRecord {

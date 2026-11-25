@@ -21,12 +21,10 @@ import { GalleryCard } from '../../components/gallery/GalleryCard';
 import { GalleryLightbox } from '../../components/gallery/GalleryLightbox';
 import { ErrorBoundary } from '../../components/common/ErrorBoundary';
 import { TestimonialCarousel } from '../../components/common/TestimonialCarousel';
+import { CollapsibleFAQ } from '../../components/common/CollapsibleFAQ';
 import { NewsletterSubscribe } from '../../components/common/NewsletterSubscribe';
 import { InstagramGrid } from '../../components/common/InstagramGrid';
-import {
-  AnimatedStatsStrip,
-  FAQAccordionSection,
-} from './HomeStatsAndTestimonials';
+import { AnimatedStatsStrip } from './HomeStatsAndTestimonials';
 import { GalleryItem } from '../../types';
 import { publicApi } from '../../services/api/public.api';
 
@@ -772,8 +770,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* SECTION 13: FAQ */}
-      <FAQAccordionSection />
+      {/* SECTION 13: COLLAPSIBLE FAQ */}
+      <CollapsibleFAQ />
 
       {/* SECTION 13B: NEWSLETTER SUBSCRIBE */}
       <NewsletterSubscribe variant="editorial" />

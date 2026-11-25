@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
 import { STUDIO_CONFIG } from '../../data/studio';
-import { STUDIO_FAQS } from '../../data/faqs';
-import { SectionHeading } from '../../components/common/SectionHeading';
+export { CollapsibleFAQ as FAQAccordionSection } from '../../components/common/CollapsibleFAQ';
 
 export function AnimatedStatsStrip() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -59,63 +57,6 @@ export function AnimatedStatsStrip() {
         <p className="mt-8 text-xs text-[#E8DCCB]/65">
           Demonstration figures shown for studio layout preview — edit directly in centralized studio configuration with verified studio milestones.
         </p>
-      </div>
-    </section>
-  );
-}
-
-export function FAQAccordionSection() {
-  const [openId, setOpenId] = useState<string | null>(STUDIO_FAQS[0].id);
-
-  return (
-    <section className="py-20 md:py-28 bg-[#F7F2E9]">
-      <div className="studio-container">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          <div className="lg:col-span-4">
-            <SectionHeading
-              devanagari="प्रश्नोत्तरी"
-              kicker="Frequently Asked Questions"
-              title="Planning Details, Answered Transparently"
-              description="Everything families ask us regarding booking advances, candid plus traditional coverage, travel across Madhya Pradesh, album craftsmanship, and rescheduling."
-            />
-          </div>
-
-          <div className="lg:col-span-8 divide-y divide-[#171615]/12 border-y border-[#171615]/12">
-            {STUDIO_FAQS.map((faq, idx) => {
-              const isOpen = openId === faq.id;
-              return (
-                <div key={faq.id} className="py-5">
-                  <button
-                    type="button"
-                    onClick={() => setOpenId(isOpen ? null : faq.id)}
-                    aria-expanded={isOpen}
-                    className="flex w-full items-start justify-between gap-6 text-left cursor-pointer group"
-                  >
-                    <div>
-                      <div className="text-xs tracking-wider text-[#57252F] mb-1">
-                        {String(idx + 1).padStart(2, '0')} · {faq.topic}
-                      </div>
-                      <h3 className="font-editorial text-xl sm:text-2xl font-medium text-[#171615] group-hover:text-[#57252F] transition-colors">
-                        {faq.question}
-                      </h3>
-                    </div>
-                    <ChevronDown
-                      className={`w-5 h-5 text-[#57252F] shrink-0 mt-2 transition-transform duration-200 ${
-                        isOpen ? 'rotate-180' : ''
-                      }`}
-                      aria-hidden="true"
-                    />
-                  </button>
-                  {isOpen && (
-                    <p className="mt-4 text-sm sm:text-base text-[#5C554E] leading-relaxed prose-measure">
-                      {faq.answer}
-                    </p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
       </div>
     </section>
   );
